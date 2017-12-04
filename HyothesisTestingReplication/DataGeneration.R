@@ -1,5 +1,5 @@
 #Here I attempt to reproduce the data from HYPOTHESIS TESTING IN COMPARATIVE AND EXPERIMENTAL STUDIES OF FUNCTION-VALUED TRAITS
-#Referred to in this script at "HypothesisTesting"
+#Referred to in this script as "HypothesisTesting"
 #first let's set up an output folder for the data that we produce
 
 wd <- getwd()
