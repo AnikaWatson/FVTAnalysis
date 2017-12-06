@@ -16,13 +16,16 @@ data.files <- list.files(outputlocation)
 
 
 #------- Monotonic Growth Function ---------
-
+#Here I define the monotonic growth function in terms of a, k (kappa in the paper), 
+#and y (gamma in the paper)
 MonoGrowth <- function(a, k, y, x) {
   a*exp(-exp(-k*(x-y)))-exp(-exp(-k*(-y)))
 }
 
-#------- Cyclic Expression Function ---------
 
+#------- Cyclic Expression Function ---------
+#Here I define the cyclic expression function in terms of a, k (kappa in the paper), 
+#and y (gamma in the paper)
 Cyclic <- function(a, k, y, x) {
   if((2*pi)-y > x){
     a*sin(x+y)
@@ -34,7 +37,8 @@ Cyclic <- function(a, k, y, x) {
 }
 
 #------- Unimodal Performance Function ---------
-
+#Here I define the unimodal performance function in terms of a, k (kappa in the paper), 
+#and y (gamma in the paper)
 Unimodal <- function(a, k, y, x) {
   if(x <= y) {
     exp(-a)*exp(-(a*x*(x-2*y))/(y^2))
