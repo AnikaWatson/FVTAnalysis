@@ -40,7 +40,7 @@ for (i in 1:20) {
 }
 
 #We can plot these data against the originl curve to see how we're doing
-plot(MonoTest, ylab = "Individual Phenotype", xlab = "x")
+plot(MonoTest, ylab = "Individual Phenotype", xlab = "x", las = 1)
 curve(MonoGrowth(1, 1, 3, x), n = 101, 
       ylim=c(-0.5, 1.2), add = TRUE)
 
@@ -61,16 +61,32 @@ for (i in 1:100) {
   set.seed(1234*i)
   MonoError <- rnorm(n=20, mean=0, sd=0.04)
   IndiDev <- rnorm(n=3, mean=0, sd=0.2)
+  Mono1akg[i,1] <- a1+IndiDev[1]
+  Mono1akg[i,2] <- k1+IndiDev[2]
+  Mono1akg[i,3] <- g1+IndiDev[3]
   for (l in 1:20){
-    MonoData1[i,l] <- MonoGrowth((a1+IndiDev[1]), (k1+IndiDev[2]), (g1+IndiDev[3]), (l/2)) 
-    + MonoError[l]
+    MonoData1[i,l] <- MonoGrowth((a1+IndiDev[1]), (k1+IndiDev[2]), (g1+IndiDev[3]), (l/2)) + MonoError[l]
   }
 }
+
+#Now we want to keep track of what a, k, and g were so let's make a table of these values.
+Mono1akg <- data.frame(matrix(NA, nrow=100, ncol=3))
+
+
+
 #Let's check this to make sure the data frame looks right
 str(MonoData1)
 
+# We'll likely be using these x-values a lot so let's make that an object
+inp <- seq(from = 0.5, to = 10, by = 0.5)
+
 #Now let's name the columns based on the x-value associated with each "observation"
-colnames(MonoData1) <- seq(from = 0.5, to = 10, by = 0.5)
+colnames(MonoData1) <- inp
+
+#let's plot this out to see if it worked
+plot(inp, MonoData1[1,], ylab = "Individual Phenotype", xlab = "x", las = 1)
+curve(MonoGrowth(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, 
+      ylim=c(-0.5, 1.2), add = TRUE)
 
 #and finally, we can export these data to a file
 write.table(MonoData1, paste(outputlocation, "MonoData1", sep = ""))
@@ -90,6 +106,7 @@ g2 <- 2.7
 #g1 <- 3
 
 MonoData2 <- data.frame(matrix(NA, nrow=100, ncol=20))
+Mono2akg <- data.frame(matrix(NA, nrow=100, ncol=3))
 
 for (i in 1:100) {
   set.seed(1234*i)
@@ -98,12 +115,91 @@ for (i in 1:100) {
   for (l in 1:20){
     MonoData2[i,l] <- MonoGrowth(a2+IndiDev[1], k2+IndiDev[2], g2+IndiDev[3], (l/2)) + MonoError[l]
   }
+  Mono2akg[i,1] <- a2+IndiDev[1]
+  Mono2akg[i,2] <- k2+IndiDev[2]
+  Mono2akg[i,3] <- g2+IndiDev[3]
 }
+
+
+
+
 str(MonoData2)
 
 colnames(MonoData2) <- seq(from = 0.5, to = 10, by = 0.5)
 
+#let's plot this out to see if it worked
+plot(inp, MonoData2[1,], ylab = "Individual Phenotype", xlab = "x", las = 1)
+curve(MonoGrowth(Mono2akg[1,1], Mono2akg[1,2], Mono2akg[1,3], x), n = 101, 
+      ylim=c(-0.5, 1.2), add = TRUE)
+
+
 write.table(MonoData2, paste(outputlocation, "MonoData2", sep = ""))
+
+
+#Now let's compare these two datasets with a plot
+plot(MonoTest, ylab = "Individual Phenotype", xlab = "x", las = 1)
+curve(MonoGrowth(1, 1, 3, x), n = 101, 
+      ylim=c(-0.5, 1.2), add = TRUE)
+
+
+
+#Ok, here's a crazy thought
+#Let's use a for loop to generate all five hundred data sets.
+#Population 1
+a1 <- 1
+k1 <- 1
+g1 <- 3
+
+#Population 2
+a2 <- 1.3
+k2 <- 1
+g2 <- 2.7
+
+#for (h in 1:50) {
+  MonoData1 <- data.frame(matrix(NA, nrow=100, ncol=20))
+  
+  #Time to fill the data frame
+  for (i in 1:100) {
+    set.seed(1234*i)
+    MonoError <- rnorm(n=20, mean=0, sd=0.04)
+    IndiDev <- rnorm(n=3, mean=0, sd=0.2)
+    for (l in 1:20){
+      MonoData1[i,l] <- MonoGrowth((a1+IndiDev[1]), (k1+IndiDev[2]), (g1+IndiDev[3]), (l/2)) 
+      + MonoError[l]
+    }
+  }
+  #Let's check this to make sure the data frame looks right
+  str(MonoData1)
+  
+  #Now let's name the columns based on the x-value associated with each "observation"
+  colnames(MonoData1) <- seq(from = 0.5, to = 10, by = 0.5)
+  
+  #and finally, we can export these data to a file
+  write.table(MonoData1, paste(outputlocation, "MonoData1", sep = ""))
+  
+  
+  MonoData2 <- data.frame(matrix(NA, nrow=100, ncol=20))
+  
+  for (i in 1:100) {
+    set.seed(1234*i)
+    MonoError <- rnorm(n=20, mean=0, sd=0.04)
+    IndiDev <- rnorm(n=3, mean=0, sd=0.2)
+    for (l in 1:20){
+      MonoData2[i,l] <- MonoGrowth(a2+IndiDev[1], k2+IndiDev[2], 
+                                   g2+IndiDev[3], (l/2)) + MonoError[l]
+    }
+  }
+  str(MonoData2)
+  
+  colnames(MonoData2) <- seq(from = 0.5, to = 10, by = 0.5)
+  
+  write.table(MonoData2, paste(outputlocation, "MonoData2", sep = ""))
+  
+  plot(MonoTest, ylab = "Individual Phenotype", xlab = "x", las = 1)
+  curve(MonoGrowth(1, 1, 3, x), n = 101, 
+        ylim=c(-0.5, 1.2), add = TRUE)
+
+
 
 #------- Cyclic Expression Function ---------
 #Here I define the cyclic expression function in terms of a (alpha in the paper), 
@@ -137,7 +233,7 @@ for (i in 1:20) {
 }
 
 
-plot(CyclicTest,  ylab = "Individual Phenotype", xlab = "x")
+plot(CyclicTest,  ylab = "Individual Phenotype", xlab = "x", las = 1)
 curve(Cyclic(1.5, 5, 1, x), n = 101, 
       ylim=c(-0.5, 1.2), add = TRUE)
 
@@ -148,14 +244,19 @@ k1 <- 5
 g1 <- 1
 
 CyclicData1 <- data.frame(matrix(NA, nrow=100, ncol=20))
+Cyclic1akg <- data.frame(matrix(NA, nrow=100, ncol=3))
 
 for (i in 1:100) {
   set.seed(1234*i)
   CyclicError <- rnorm(n=20, mean=0, sd=0.04)
   IndiDev <- rnorm(n=3, mean=0, sd=0.2)
   for (l in 1:20){
-    CyclicData1[i,l] <- Cyclic(a1+IndiDev[1], k1+IndiDev[2], g1+IndiDev[3], (l/2)) + CyclicError[l]
+    CyclicData1[i,l] <- Cyclic(a1+IndiDev[1], k1+IndiDev[2], 
+                               g1+IndiDev[3], (l/2)) + CyclicError[l]
   }
+  Cyclic1akg[i,1] <- a1+IndiDev[1]
+  Cyclic1akg[i,2] <- k1+IndiDev[2]
+  Cyclic1akg[i,3] <- g1+IndiDev[3]
 }
 str(CyclicData1)
 
@@ -170,15 +271,21 @@ g1 <- 1.3
 
 
 CyclicData2 <- data.frame(matrix(NA, nrow=100, ncol=20))
+Cyclic2akg <- data.frame(matrix(NA, nrow=100, ncol=3))
 
 for (i in 1:100) {
   set.seed(1234*i)
   CyclicError <- rnorm(n=20, mean=0, sd=0.04)
   IndiDev <- rnorm(n=3, mean=0, sd=0.2)
   for (l in 1:20){
-    CyclicData2[i,l] <- Cyclic(a2+IndiDev[1], k2+IndiDev[2], g2+IndiDev[3], (l/2)) + CyclicError[l]
+    CyclicData2[i,l] <- Cyclic(a2+IndiDev[1], k2+IndiDev[2], 
+                               g2+IndiDev[3], (l/2)) + CyclicError[l]
   }
+  Cyclic2akg[i,1] <- a1+IndiDev[1]
+  Cyclic2akg[i,2] <- k1+IndiDev[2]
+  Cyclic2akg[i,3] <- g1+IndiDev[3]
 }
+
 
 colnames(CyclicData2) <- seq(from = 0.5, to = 10, by = 0.5)
 
@@ -216,7 +323,7 @@ for (i in 1:20) {
 }
 
 
-plot(UnimodalTest, ylab = "Individual Phenotype", xlab = "x")
+plot(UnimodalTest, ylab = "Individual Phenotype", xlab = "x", las = 1)
 curve(Unimodal(1, 2, 4, x), n = 101, 
       ylim=c(-0.5, 1.2), add = TRUE)
 
@@ -227,14 +334,19 @@ k1 <- 2
 g1 <- 4
 
 UnimodalData1 <- data.frame(matrix(NA, nrow=100, ncol=20))
+Unimodal1akg <- data.frame(matrix(NA, nrow=100, ncol=3))
 
 for (i in 1:100) {
   set.seed(1234*i)
   UnimodalError <- rnorm(n=20, mean=0, sd=0.04)
   IndiDev <- rnorm(n=3, mean=0, sd=0.2)
   for (l in 1:20){
-    UnimodalData1[i,l] <- Unimodal(a1+IndiDev[1], k1+IndiDev[2], g1+IndiDev[3], (l/2)) + UnimodalError[l]
+    UnimodalData1[i,l] <- Unimodal(a1+IndiDev[1], k1+IndiDev[2], 
+                                   g1+IndiDev[3], (l/2)) + UnimodalError[l]
   }
+  Unimodal1akg[i,1] <- a1+IndiDev[1]
+  Unimodal1akg[i,2] <- k1+IndiDev[2]
+  Unimodal1akg[i,3] <- g1+IndiDev[3]
 }
 str(UnimodalData1)
 
@@ -248,14 +360,19 @@ k1 <- 2
 g1 <- 4.3
 
 UnimodalData2 <- data.frame(matrix(NA, nrow=100, ncol=20))
+Unimodal2akg <- data.frame(matrix(NA, nrow=100, ncol=3))
 
 for (i in 1:100) {
   set.seed(1234*i)
   UnimodalError <- rnorm(n=20, mean=0, sd=0.04)
   IndiDev <- rnorm(n=3, mean=0, sd=0.2)
   for (l in 1:20){
-    UnimodalData2[i,l] <- Unimodal(a1+IndiDev[1], k1+IndiDev[2], g1+IndiDev[3], (l/2)) + UnimodalError[l]
+    UnimodalData2[i,l] <- Unimodal(a1+IndiDev[1], k1+IndiDev[2], 
+                                   g1+IndiDev[3], (l/2)) + UnimodalError[l]
   }
+  Unimodal2akg[i,1] <- a1+IndiDev[1]
+  Unimodal2akg[i,2] <- k1+IndiDev[2]
+  Unimodal2akg[i,3] <- g1+IndiDev[3]
 }
 str(UnimodalData2)
 

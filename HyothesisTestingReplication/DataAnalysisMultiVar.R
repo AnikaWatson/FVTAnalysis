@@ -23,3 +23,8 @@ HotellingsT2(UnimodalData1, UnimodalData2)
 #T.2 = 13.081, df1 = 20, df2 = 179, p-value < 2.2e-16
 #alternative hypothesis: true location difference is not equal to 
 #c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+
+
+#Let's see what happens if we only compare one individual from each group 
+#(because that's all I've gotten done for the poly analysis)
+HotellingsT2(MonoData1[1,], MonoData2[1,])
