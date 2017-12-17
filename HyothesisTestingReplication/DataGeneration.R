@@ -57,7 +57,7 @@ g1 <- 3
 MonoData1 <- data.frame(matrix(NA, nrow=100, ncol=20))
 
 #Time to fill the data frame
-for (i in 1:100) {
+for (i in 1:10) {
   set.seed(1234*i)
   MonoError <- rnorm(n=20, mean=0, sd=0.04)
   IndiDev <- rnorm(n=3, mean=0, sd=0.2)
@@ -108,7 +108,20 @@ g2 <- 2.7
 MonoData2 <- data.frame(matrix(NA, nrow=100, ncol=20))
 Mono2akg <- data.frame(matrix(NA, nrow=100, ncol=3))
 
-for (i in 1:100) {
+a.all <- c(2,3,4)
+
+
+
+for( par.n in 1:length(a.all)){
+  
+  functio.whatever(a.all[par.n], b.all[par.n], k.all[par.n])
+  
+}
+
+a.all[par.n]
+
+
+for (i in 1:10) {
   set.seed(1234*i)
   MonoError <- rnorm(n=20, mean=0, sd=0.04)
   IndiDev <- rnorm(n=3, mean=0, sd=0.2)
@@ -164,8 +177,7 @@ g2 <- 2.7
     MonoError <- rnorm(n=20, mean=0, sd=0.04)
     IndiDev <- rnorm(n=3, mean=0, sd=0.2)
     for (l in 1:20){
-      MonoData1[i,l] <- MonoGrowth((a1+IndiDev[1]), (k1+IndiDev[2]), (g1+IndiDev[3]), (l/2)) 
-      + MonoError[l]
+      MonoData1[i,l] <- MonoGrowth((a1+IndiDev[1]), (k1+IndiDev[2]), (g1+IndiDev[3]), (l/2)) + MonoError[l]
     }
   }
   #Let's check this to make sure the data frame looks right

@@ -8,8 +8,10 @@ for (i in 1:20) {
   Mono1ind1[i] <- MonoData1[1,i]
 }
 
+as.numeric(MonoData1[1,])
+
 #make the model
-PolyModelTest1 <- lm(Mono1ind1 ~ poly(x = inp, n = 3))
+PolyModelTest1 <- lm(Mono1ind1 ~ poly(x = inp, n = 19))
 
 #calculate confidence intervals
 confint(PolyModelTest1, level=0.95)
@@ -65,14 +67,38 @@ for (l in 1:10) {
   }
 }
 
-PolyModel1 <- rep(NA, 10)
+#make the model
+
+PolyModel2 <- data.frame(matrix(data=NA,nrow=4,ncol=10))
 
 for (l in 1:10) {
-  PolyModel1[l] <- lm(Mono1ind[l] ~ poly(x = inp, n = 3))
+  PolyModel2[l] <- coefficients(lm(Mono2ind[l,] ~ poly(x = inp, n = 3)))
+}
+
+class(coefficients(lm(Mono2ind[l,] ~ poly(x = inp, n = 3))))
+
+#Now let's make the data frame of coefficients for the second MonoGrowth population
+Mono2ind <- matrix(data=NA,nrow=10,ncol=20)
+
+for (l in 1:10) {
+  for (i in 1:20) {
+    Mono2ind[l,i] <- MonoData2[l,i]
+  }
 }
 
 #make the model
-PolyModel1 <- lm(Mono1ind1 ~ poly(x = inp, n = 3))
+
+PolyModel2 <- data.frame(matrix(data=NA,nrow=4,ncol=10))
+
+for (l in 1:10) {
+  PolyModel2[l] <- coefficients(lm(Mono2ind[l,] ~ poly(x = inp, n = 3)))
+}
+
+class(coefficients(lm(Mono2ind[l,] ~ poly(x = inp, n = 3))))
+
+
+
+library(orthopolynom)
 
 #---- Let's try another approach: Legendre ----
 legendre.recurrences <- function( n, normalized=FALSE ) {
@@ -160,18 +186,14 @@ LegendreModel <- lm(number ~ Legendre(x = inp, n=4))
 
 
 #---- Sinusoidal stuff ----
-#y <- c(11.622967, 12.006081, 11.760928, 12.246830, 12.052126, 12.346154, 12.039262, 12.362163, 12.009269, 11.260743, 10.950483, 10.522091,  9.346292,  7.014578,  6.981853,  7.197708,  7.035624,  6.785289, 7.134426,  8.338514,  8.723832, 10.276473, 10.602792, 11.031908, 11.364901, 11.687638, 11.947783, 12.228909, 11.918379, 12.343574, 12.046851, 12.316508, 12.147746, 12.136446, 11.744371,  8.317413, 8.790837, 10.139807,  7.019035,  7.541484,  7.199672,  9.090377,  7.532161,  8.156842,  9.329572, 9.991522, 10.036448, 10.797905)
-#t <- 18:65
-y <- number
-t <- inp
 ssp <- spectrum(Mono1ind1)  
 per <- 1/ssp$freq[ssp$spec==max(ssp$spec)]
 reslm <- lm(Mono1ind1 ~ sin(2*pi/per*inp)+cos(2*pi/per*inp))
 reslm
 
 rg <- diff(range(Mono1ind1))
-plot(Mono1ind1~inp, ylim=c(min(Mono1ind1)-0.1*rg, max(Mono1ind1)+0.1*rg))
-lines(fitted(reslm)~inp, col=2, lty=2)   # dashed blue line is sin fit
+plot(Mono1ind1~inp, ylim=c(min(Mono1ind1)-0.1*rg, max(Mono1ind1)+0.1*rg), las=1)
+lines(fitted(reslm)~inp, col=2, lty=2, lwd = 2)   # dashed blue line is sin fit
 curve(MonoGrowth(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "black")
 
 
