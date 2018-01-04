@@ -11,7 +11,7 @@ for (i in 1:20) {
 as.numeric(MonoData1[1,])
 
 #make the model
-PolyModelTest1 <- lm(Mono1ind1 ~ poly(x = inp, n = 19))
+PolyModelTest1 <- lm(Mono1ind1 ~ poly(x = inp, n = 6))
 
 #calculate confidence intervals
 confint(PolyModelTest1, level=0.95)
@@ -37,7 +37,7 @@ for (i in 1:20) {
 }
 
 #make the model
-model <- lm(Mono2ind1 ~ poly(x = inp, n = 3))
+model <- lm(Mono2ind1 ~ poly(x = inp, n = 5))
 
 #calculate confidence intervals
 confint(model, level=0.95)
@@ -186,6 +186,7 @@ LegendreModel <- lm(number ~ Legendre(x = inp, n=4))
 
 
 #---- Sinusoidal stuff ----
+t <- inp
 ssp <- spectrum(Mono1ind1)  
 per <- 1/ssp$freq[ssp$spec==max(ssp$spec)]
 reslm <- lm(Mono1ind1 ~ sin(2*pi/per*inp)+cos(2*pi/per*inp))
@@ -200,7 +201,7 @@ curve(MonoGrowth(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add =
 # including 2nd harmonic really improves the fit
 reslm2 <- lm(Mono1ind1 ~ sin(2*pi/per*inp)+cos(2*pi/per*inp)+sin(4*pi/per*inp)+cos(4*pi/per*inp))
 summary(reslm2)
-lines(fitted(reslm2)~t, col = "green", lwd = 3)
+lines(fitted(reslm2)~inp, col = "green", lwd = 3)
 
 
 predicted.intervals <- predict(reslm2, data.frame(x=inp),interval='confidence',
