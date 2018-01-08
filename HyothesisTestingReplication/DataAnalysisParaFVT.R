@@ -75,10 +75,12 @@ for (l in 1:10) {
   PolyModel2[l] <- coefficients(lm(Mono2ind[l,] ~ poly(x = inp, n = 3)))
 }
 
-class(coefficients(lm(Mono2ind[l,] ~ poly(x = inp, n = 3))))
 
 #Now let's make the data frame of coefficients for the second MonoGrowth population
 Mono2ind <- matrix(data=NA,nrow=10,ncol=20)
+
+
+class(coefficients(lm(Mono2ind[l,] ~ poly(x = inp, n = 3))))
 
 for (l in 1:10) {
   for (i in 1:20) {

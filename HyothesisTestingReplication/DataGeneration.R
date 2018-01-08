@@ -8,7 +8,7 @@ wd <- getwd()
 #check if output folder already exists otherwise create one
 DataOut <- "data_output"
 if (file.exists(DataOut) == FALSE) {
-  dir.create(file.path(wd, folders), showWarnings = FALSE) 
+  dir.create(file.path(wd, DataOut), showWarnings = FALSE) 
 } else print("Output Folder Already exists")
 
 #map folders to R structure
