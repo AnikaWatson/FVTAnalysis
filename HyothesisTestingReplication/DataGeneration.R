@@ -20,7 +20,7 @@ data.files <- list.files(outputlocation)
 #Here I define the monotonic growth function in terms of a (alpha in the paper), 
 #k (kappa in the paper), and g (gamma in the paper)
 MonoGrowth <- function(a, k, g, x) {
-  a*exp(-exp(-k*(x-g)))-exp(-exp(-k*(-g)))
+  a*exp(-exp(-k*(x-g)))-exp(-exp(k*(g)))
 }
 
 #Now let's plot this and fiddle around with the parameters a, k, and g...
@@ -56,12 +56,12 @@ g1 <- 3
 #Note that these are the average values for the population and not the values for each individual
 
 #Now let's build a data frame for our data
-MonoData1 <- data.frame(matrix(NA, nrow=100, ncol=20))
+MonoData1 <- data.frame(matrix(NA, nrow=10, ncol=20))
 
 
 #Now we want to keep track of what a, k, and g are for each individual
 #so let's make a table of these values.
-Mono1akg <- data.frame(matrix(NA, nrow=100, ncol=3))
+Mono1akg <- data.frame(matrix(NA, nrow=10, ncol=3))
 
 #Time to fill the data frame
 for (i in 1:10) {

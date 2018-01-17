@@ -1,0 +1,242 @@
+---
+title: "Fitting Polynomial Regression to Data"
+author: "Anika Watson"
+date: '2018-01-16'
+runtime: shiny
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r functions, include=FALSE}
+# A function for captioning and referencing images
+fig <- local({
+    i <- 0
+    ref <- list()
+    list(
+        cap=function(refName, text) {
+            i <<- i + 1
+            ref[[refName]] <<- i
+            paste("Figure ", i, ": ", text, sep="")
+        },
+        ref=function(refName) {
+            ref[[refName]]
+        })
+})
+``` 
+
+```{r, include=FALSE}
+library("scales")
+library(shiny)
+```
+
+# Function-Valued Analysis
+
+Many biological traits are not scalar variables but continuous functions (Griswold, Gomulkiewicz & Heckman, 2008; Stinchcombe & Kirkpatrick, 2012; Hadjipantelis et al., 2013). Size, for instance, can be described as a function of age, fur thickness a function of ambient temperature, and so on. Scientific articles in the sphere of function-valued analysis argue that treating such traits as continuous functions provides substantially greater statistical power and other clear advantages over multivariate approaches (Stinchcombe & Kirkpatrick, 2012; Griswold, Gomulkiewicz & Heckman, 2008). The technique works by fitting a function to the data and then running statistics on the coefficients of the approximating function, rather than the data itself.
+
+### Fitting a Polynomial Function to Data
+
+If you've ever hit "add trendline" and "display equation on chart" in excel then you've already done this... sort of. Here we will explore how to fit a function to data in R.
+
+First, we need data. I have created a sample dataset comprised of the lengths of the mythical species of fish, R-ctic ch-R. This dataset has both random individual variance, and random measurement error, and details about how the data was generated have been outlined in my *Data Generation* document. Here is a plot of the data:
+
+```{r chR, include=FALSE}
+RcticChR <- function(a, k, g, x) {
+  a*exp(-exp(-k*(x-g)))-exp(-exp(-k*(-g)))
+}
+inp <- seq(from = 0.5, to = 10, by = 0.5)
+a1 <- 1
+k1 <- 1
+g1 <- 3
+RcticChR1 <- data.frame(matrix(NA, nrow=10, ncol=20))
+Mono1akg <- data.frame(matrix(NA, nrow=100, ncol=3))
+for (i in 1:10) {
+  set.seed(1234*i)
+  MonoError <- rnorm(n=20, mean=0, sd=0.04) #measurement error
+  IndiDev <- rnorm(n=3, mean=0, sd=0.2) #the individual's deviation from the pop. av.
+  for (l in 1:20){
+    RcticChR1[i,l] <- RcticChR((a1+IndiDev[1]), (k1+IndiDev[2]), (g1+IndiDev[3]), (l/2)) + MonoError[l]
+  }
+  Mono1akg[i,1] <- a1+IndiDev[1]
+  Mono1akg[i,2] <- k1+IndiDev[2]
+  Mono1akg[i,3] <- g1+IndiDev[3]
+}
+```
+
+```{r pressure, echo=FALSE, fig.cap=fig$cap("R-ctic Ch-R 1", "A plot of the ten individuals in the first population of R-ctic Ch-R.")}
+
+#cols <- c("#000000", "#332288", "#88CCEE", "#44AA99", "#117733", "#999933", "#DDCC77", "#CC6677", "#882255", "#AA4499")
+
+cols <- c("#000000", 2, 3, 4, 5, 6, 7, 8, "#882255", "darkolivegreen2")
+
+matplot(y = t(RcticChR1), type = 'p', lty = 1, pch = 16, main = "Population 1", ylab = "Length (m)", xlab = "Age (months)", las = 1, col = alpha(cols, 0.5))
+```
+
+Now that we have data we can fit various models to them. Let's begin with polynmial regression. For this we will focus on one individual, from one population of R-ctic ch-R. Let's take individual 1 from the first population and call him `RcticChR1ind1`.
+
+```{r, include=FALSE}
+RcticChR1ind1 <- rep(NA, 20)
+for (i in 1:20) {
+  RcticChR1ind1[i] <- RcticChR1[1,i]
+}
+```
+
+Now, to fit a model to `RcticChR1ind1` we will use linear models function in R, but fear not, this function can do far more than merely slap on the closest linear approximation! To get a higher order polynomial approximation we need to specify the highest exponent in the polynomial approximation, denoted "n". Let's try n = 6.
+
+```{r}
+xvalues <- seq(from = 0.5, to = 10, by = 0.5) #This object will come up often so take note!
+PolyModelPop1ind1 <- lm(RcticChR1ind1 ~ poly(x = xvalues, n = 6))
+```
+
+From this we can calculate the predicted 99% confidence intervals.
+
+```{r}
+predicted.intervals <- predict(PolyModelPop1ind1, data.frame(x=inp), interval='confidence', level=0.99)
+```
+
+Now that we have a model we can plot it against the data to see how it holds up. 
+
+First let's plot the data.
+
+```{r, eval=FALSE}
+plot.new(y = RcticChR1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (m)", xlab = "Age (months)", las = 1)
+```
+
+Then add the secret function of the true length of RcticChR1ind1 used to generate the data.
+
+```{r, eval=FALSE}
+curve(RcticChR(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
+```
+
+And we're ready to plot the approximated polynomial function.
+
+```{r, eval=FALSE}
+lines(inp,predicted.intervals[,1],col='green', lwd=3)
+lines(inp,predicted.intervals[,2],col=4, lwd=1, lty=2)
+lines(inp,predicted.intervals[,3],col=4, lwd=1, lty=2)
+```
+
+Throw in a legend and we're good to go.
+
+```{r, eval=FALSE}
+legend("bottomright",c("Data", "True Fun.", "Predicted Fun.", "99% Conf. Int."), 
+       col = c("black", "red", "green", 4), pch = c(1, NA, NA, NA), lwd = c(NA, 1, 3, 1), lty = c(1, 1, 1, 2))
+```
+
+```{r, echo=FALSE}
+plot(y = RcticChR1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (m)", xlab = "Age (months)", las = 1)
+curve(RcticChR(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
+lines(inp,predicted.intervals[,1],col='green', lwd=3)
+lines(inp,predicted.intervals[,2],col=4, lwd=1, lty=2)
+lines(inp,predicted.intervals[,3],col=4, lwd=1, lty=2)
+legend("bottomright",c("Data", "True Fun.", "Predicted Fun.", "99% Conf. Int."), 
+       col = c("black", "red", "green", 4), pch = c(1, NA, NA, NA), lwd = c(NA, 1, 3, 1), lty = c(1, 1, 1, 2))
+
+
+```
+
+This green line seems like a reasonable fit. But what if we hadn't chosen n=6? How did that arbitrary decision impact the model? Slide the toggle below to see for yourself.
+
+```{r, echo=FALSE}
+sliderInput("numb", label = "Polynomial Degree", min = 1, max = 19, value = 6, step = 1, animate = T)
+```
+
+
+```{r, echo=FALSE}
+
+renderPlot({
+  PolyModelPop1ind1 <- lm(RcticChR1ind1 ~ poly(x = inp, n = input$numb))
+  predicted.intervals <- predict(PolyModelPop1ind1, data.frame(x=inp), interval='confidence', level=0.99)
+  
+  plot(y = RcticChR1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (m)", xlab = "Age (months)", las = 1)
+  curve(RcticChR(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
+  lines(inp,predicted.intervals[,1],col='green', lwd=3)
+  lines(inp,predicted.intervals[,2],col=4, lwd=1, lty=2)
+  lines(inp,predicted.intervals[,3],col=4, lwd=1, lty=2)
+  legend("bottomright",c("Data", "True Fun.", "Predicted Fun.", "99% Conf. Int."), col = c("black", "red", "green", 4), pch = c(1, NA, NA, NA), lwd = c(NA, 1, 3, 1), lty = c(1, 1, 1, 2))
+})
+
+```
+
+It is important to note what happpens when n = 19. Here the approximate function has been overparametrized to the extreme and has lost all predictive value. At n=19 the model also loses statistical power because when the leading term is x^19^, there are 20 coefficients to analyze, the same as the number of datapoints.
+
+### Fitting a Sinusoidal Function to Data
+
+Okay so we fit a polynomial to the data, but is that really the best fit? In excel the user can choose from a selection of fits so let's try another. Here we will go beyond the capabilities of excel and fit a sinusoidal model to the data.
+
+To begin, we can use the function `spectrum` to get the spectral density of `RcticChR1ind1`.
+
+```{r}
+spctrm <- spectrum(RcticChR1ind1)
+```
+
+This plot shows the prominence of various frequencie in the data, from which can find the period of the most prominent frequency.
+
+```{r}
+period <- 1/spctrm$freq[spctrm$spec==max(spctrm$spec)]
+```
+
+Now we're ready to make a model. Even though we are now even further from a linear model than we were with the polynomial approximation, we are going to use the linear model function once again.
+
+```{r}
+SinModelPop1ind1 <- lm(RcticChR1ind1 ~ sin(2*pi/period*xvalues)+cos(2*pi/period*xvalues))
+```
+
+Again, let's find the predicted intervals.
+
+```{r}
+PredictedIntervalsSin <- predict(SinModelPop1ind1, data.frame(x = xvalues),interval='confidence', level=0.99)
+```
+
+Now we're ready to plot our model. We can start by plotting the data and true function as before.
+
+```{r, tidy=TRUE, eval=FALSE}
+plot(y = RcticChR1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (m)", xlab = "Age (months)", las = 1)
+curve(RcticChR(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
+```
+
+And then add the approximate function and a legend.
+
+```{r, tidy=TRUE, eval=FALSE}
+lines(fitted(SinModelPop1ind1)~xvalues, col='green', lwd=3)
+
+
+lines(xvalues, PredictedIntervalsSin[,2],col=4, lwd=1, lty=2)
+lines(xvalues, PredictedIntervalsSin[,3],col=4, lwd=1, lty=2)
+
+legend("bottomright",c("Data", "True Fun.", "Predicted Fun.", "99% Conf. Int."), col = c("black", "red", "green", 4), pch = c(1, NA, NA, NA), lwd = c(NA, 1, 3, 1), lty = c(1, 1, 1, 2))
+
+```
+
+```{r, echo=FALSE}
+plot(y = RcticChR1ind1, x = xvalues, main = "Sinusoidal Regression", ylab = "Length (m)", xlab = "Age (months)", las = 1)
+curve(RcticChR(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
+lines(fitted(SinModelPop1ind1)~xvalues, col='green', lwd=3)
+lines(xvalues, PredictedIntervalsSin[,2],col=4, lwd=1, lty=2)
+lines(xvalues, PredictedIntervalsSin[,3],col=4, lwd=1, lty=2)
+legend("bottomright",c("Data", "True Fun.", "Predicted Fun.", "99% Conf. Int."), col = c("black", "red", "green", 4), pch = c(1, NA, NA, NA), lwd = c(NA, 1, 3, 1), lty = c(1, 1, 1, 2))
+
+```
+
+This fit is comparable to a third degree polynomial which isn't so great. Let's see if we can improve the fit by adding a second harmonic.
+
+```{r, include=FALSE}
+SinModel2Pop1ind1 <- lm(RcticChR1ind1 ~ sin(2*pi/period*xvalues)+cos(2*pi/period*xvalues)+sin(4*pi/period*xvalues)+cos(4*pi/period*xvalues))
+
+PredictedIntervalsSin2 <- predict(SinModel2Pop1ind1, data.frame(x = xvalues),interval='confidence', level=0.99)
+```
+
+Now let's plot this and see how our approximation improves.
+
+```{r}
+plot(y = RcticChR1ind1, x = xvalues, main = "Sinusoidal Regression", ylab = "Length (m)", xlab = "Age (months)", las = 1)
+curve(RcticChR(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
+lines(fitted(SinModelPop1ind1)~xvalues, col="black", lwd=1)
+lines(fitted(SinModel2Pop1ind1)~xvalues, col='green', lwd=3)
+lines(xvalues, PredictedIntervalsSin2[,2],col=4, lwd=1, lty=2)
+lines(xvalues, PredictedIntervalsSin2[,3],col=4, lwd=1, lty=2)
+legend("bottomright",c("Data", "True Fun.", "First Harmonic", "Second Harmonic", "99% Conf. Int."), col = c("black", "red", "black", "green", 4), pch = c(1, NA, NA, NA, NA), lwd = c(NA, 1, 1, 3, 1), lty = c(1, 1, 1, 1, 2))
+```
+
