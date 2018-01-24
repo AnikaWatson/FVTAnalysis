@@ -212,5 +212,24 @@ TrigModel <- function (x, m, n){
   }
   lm(m ~ sum(trigfun))
 }
+install.packages("hermite")
+library("hermite")
+data.c <- c(rep(0,122), rep(1,40), rep(2,14), rep(3,16), rep(4,6), rep(5,2))
+data.c
+mle1 <- glm.hermite(data.c~1, link="log", start=NULL, m=3)
+summary(mle1)
+str(mle1)
+
+install.packages("phylocurve")
+library("phylocurve")
+
+
+
+plot(data.c)
+points(mle1$fitted.values)
+mean(data.c)
+
+
+
 
 

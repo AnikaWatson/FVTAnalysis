@@ -71,10 +71,10 @@ for (i in 1:10) {
 
 cols <- c("#000000", 2, 3, 4, 5, 6, 7, 8, "#882255", "darkolivegreen2")
 
-matplot(y = t(RcticChR1), type = 'p', lty = 1, pch = 16, main = "Population 1", ylab = "Length (m)", xlab = "Age (months)", las = 1, col = alpha(cols, 0.5))
+matplot(y = t(RcticChR1), type = 'p', lty = 1, pch = 16, main = "Males", ylab = "Length (m)", xlab = "Age (months)", las = 1, col = alpha(cols, 0.5))
 ```
 
-Now that we have data we can fit various models to them. Let's begin with polynmial regression. For this we will focus on one individual, from one population of R-ctic ch-R. Let's take individual 1 from the first population and call him `RcticChR1ind1`.
+Now that we have data we can fit various models to them. Let's begin with polynmial regression. For this we will focus on one individual, from one population of R-ctic ch-R. Let's take the first male and call him `RcticChR1ind1`.
 
 ```{r, include=FALSE}
 RcticChR1ind1 <- rep(NA, 20)
@@ -240,3 +240,10 @@ lines(xvalues, PredictedIntervalsSin2[,3],col=4, lwd=1, lty=2)
 legend("bottomright",c("Data", "True Fun.", "First Harmonic", "Second Harmonic", "99% Conf. Int."), col = c("black", "red", "black", "green", 4), pch = c(1, NA, NA, NA, NA), lwd = c(NA, 1, 1, 3, 1), lty = c(1, 1, 1, 1, 2))
 ```
 
+### Analysis
+
+Ok so we've got a model, now what? 
+
+First, we need to get R to describe the function it's plotted as the model in order to run our analyses.
+
+We are finally ready to broaden our scope from our friend 'RcticChR1ind1' and consider this example from a population level. By repeating the process outlined above for 'RcticChR1ind1' for all of the males

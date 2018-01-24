@@ -1,0 +1,61 @@
+4+4
+.libPaths()
+install.packages("phylocurve")
+load("/private/var/folders/sj/hhc4pp2d6bgflxnw9jzn2hdw0000gn/T/Rtmp81FQ7k/downloaded_packages/phylocurve/Meta/package.rds")
+clean.data <- paste(wd, "/Clean_Data/", sep = "")#
+names <- list.files(clean.data)#
+read.csv(paste(raw.data, names[k], sep = ""), stringsAsFactors = FALSE)#
+#
+scores <- rep(NA, length(names))#
+for (k in 1:length(names)) {#
+  file <- read.csv(paste(clean.data, names[k], sep = ""), stringsAsFactors = FALSE)#
+  empty <- rep(NA, (length(file[,1])-1))#
+  for (i in 1:(length(file[,1])-1)){#
+    temp <- sum(as.numeric(file[(i+1), 2:15]))/sum(as.numeric(file[1, 2:15]))#
+    empty[i] <- temp#
+  }#
+  scores[k] <- mean(empty)#
+}#
+#
+hist(scores, col = "red")#
+#
+for (k in 1:length(names)) {#
+  file <- read.csv(paste(clean.data, names[k], sep = ""), stringsAsFactors = FALSE)#
+  empty <- rep(NA, (length(file[,1])-1))#
+  for (i in 1:(length(file[,1])-1)){#
+    temp <- sum(as.numeric(file[(i+1), 2:15]))/sum(as.numeric(file[1, 2:15]))#
+    empty[i] <- temp#
+  }#
+  assign(paste("scores.", k, sep = ""),(empty))#
+}#
+#
+scores
+groups.t <- c(2014:2016, 2015, 2016)#
+#
+ylim.t <- c(0, 1)#
+xlim.t <- c(0.5, 5.5)#
+#
+wdth.l <- 0.3 # width of the line of the mean of each group#
+jitter.t <- 2   # amount of jitter on the x axis
+plot(NA, xlim = xlim.t, ylim = ylim.t, xaxt = 'n', las = 1)#
+axis(1,  c(1,2,3,4,5), groups.t)  # make a news x axis and add the two groups as labels#
+#
+points(jitter(rep(1, length(scores.1)), jitter.t) , scores.1, pch = 16, col =  "#FF000066")#
+lines( c((1 - wdth.l), (1 + wdth.l)), rep( mean(scores.1), 2) )#
+#
+points(jitter(rep(2, length(scores.2)), jitter.t) , scores.2, pch = 16, col =  "#FF000066")#
+lines( c((2 - wdth.l), (2 + wdth.l)), rep( mean(scores.2), 2) )#
+#
+points(jitter(rep(3, length(scores.3)), jitter.t) , scores.3, pch = 16, col =  "#FF000066")#
+lines( c((3 - wdth.l), (3 + wdth.l)), rep( mean(scores.3), 2) )#
+#
+points(jitter(rep(4, length(scores.4)), jitter.t) , scores.4, pch = 16, col =  "#00800066")#
+lines( c((4 - wdth.l), (4 + wdth.l)), rep( mean(scores.4), 2) )#
+#
+points(jitter(rep(5, length(scores.5)), jitter.t) , scores.5, pch = 16, col =  "#00800066")#
+lines( c((5 - wdth.l), (5 + wdth.l)), rep( mean(scores.5), 2) )#
+#
+lines(c(xlim.t), rep(((sum(scores.1)+sum(scores.2)+sum(scores.3)+sum(scores.4)+sum(scores.5))/(length(scores.1)+length(scores.2)+length(scores.3)+length(scores.4)+length(scores.5))), 2), lty = "dashed")
+scores
+install.packages(phylocurve)
+install.packages("phylocurve")
