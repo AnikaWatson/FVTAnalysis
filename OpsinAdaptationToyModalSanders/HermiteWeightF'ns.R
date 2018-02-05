@@ -78,7 +78,7 @@ p4 <- qplot(x, value, data = mdf4, geom = "line", color = degree, xlim = c(-5, 5
 
 install.packages(gridExtra)
 library("gridExtra")
-grid.arrange(p1, p2, p3, p4, nrow = 2)
+grid.arrange(p1+ theme(panel.background = element_rect(fill = 'white', colour = 'white')), p2+ theme(panel.background = element_rect(fill = 'white', colour = 'white')), p3+ theme(panel.background = element_rect(fill = 'white', colour = 'white')), p4+ theme(panel.background = element_rect(fill = 'white', colour = 'white')), nrow = 2)
 
 
 
