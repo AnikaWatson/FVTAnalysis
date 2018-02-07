@@ -11,9 +11,10 @@ for (i in 200:800) {
 
 sBHunt <- cbind(rep(NA, 600), rep(NA, 600))
 
+
 for (i in 200:800) {
   sBHunt[(i-200),1] <- (i)
-  fit <- lm(sWavelength[,2] ~ dnorm(x = xVals, mean = i))
+  fit <- nls(y ~ a*(psi2)(0, xVals, i, b), data = as.data.frame(sWavelength[,2]), start = list(a=1, b=1))
   sBHunt[(i-200),2] <- as.numeric(chisq.test(x = sWavelength, p = fit)[1])
 }
 

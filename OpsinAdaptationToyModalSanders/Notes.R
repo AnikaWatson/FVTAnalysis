@@ -71,3 +71,6 @@ psi2 <- function(n, x, m, s) {
   }
   (-1)^n*((Hermite.H(inFun(x, m, s))*g(x, m, s))/sqrt(factorial(n)*2^n))
 }
+
+#bump hunting
+fit <- lm(sWavelength[,2] ~ dnorm(x = xVals, mean = i))

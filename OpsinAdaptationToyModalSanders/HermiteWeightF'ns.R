@@ -1,5 +1,7 @@
 library("orthopolynom")
 library("mpoly")
+library("ggplot2")
+library("gridExtra")
 
 #Here we define the weight function that will normalize the Hermite function...
 #... at leas that's what I think it does...
@@ -23,7 +25,7 @@ n <- 3
 m <- 0
 s <- 1
 
-psi(n, x, m, s)
+(hermite((0), "h"))
 
 #Here I checked that I get the same integral as Sanders
 integrand <- function(x) {
@@ -41,8 +43,6 @@ df <- data.frame(r, as.function(psi)(n, r, m, s))
 names(df) <- c("x", paste0("T_", 0:n))
 mdf <- gather(df, degree, value, -x)
 qplot(x, value, data = mdf, geom = "line", color = degree, xlim = c(-5, 5))
-
-
 
 #Below I reproduce Sanders' plot of the basis Hermite functions
 psi2 <- function(n, x, m, s) {
@@ -76,8 +76,7 @@ p2 <- qplot(x, value, data = mdf2, geom = "line", color = degree, xlim = c(-5, 5
 p3 <- qplot(x, value, data = mdf3, geom = "line", color = degree, xlim = c(-5, 5))
 p4 <- qplot(x, value, data = mdf4, geom = "line", color = degree, xlim = c(-5, 5))
 
-install.packages(gridExtra)
-library("gridExtra")
+
 grid.arrange(p1+ theme(panel.background = element_rect(fill = 'white', colour = 'white')), p2+ theme(panel.background = element_rect(fill = 'white', colour = 'white')), p3+ theme(panel.background = element_rect(fill = 'white', colour = 'white')), p4+ theme(panel.background = element_rect(fill = 'white', colour = 'white')), nrow = 2)
 
 

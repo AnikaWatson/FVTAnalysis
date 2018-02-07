@@ -1,5 +1,5 @@
 ---
-title: "Fitting Polynomial Regression to Data"
+title: "Introduction to Function-Valued Analysis"
 author: "Anika Watson"
 date: '2018-01-16'
 runtime: shiny
@@ -32,15 +32,23 @@ library("scales")
 library(shiny)
 ```
 
-# Function-Valued Analysis
+## Introduction
 
 Many biological traits are not scalar variables but continuous functions (Griswold, Gomulkiewicz & Heckman, 2008; Stinchcombe & Kirkpatrick, 2012; Hadjipantelis et al., 2013). Size, for instance, can be described as a function of age, fur thickness, a function of ambient temperature, and so on. Scientific articles in the sphere of function-valued analysis argue that treating such traits as continuous functions provides substantially greater statistical power and other clear advantages over multivariate approaches (Stinchcombe & Kirkpatrick, 2012; Griswold, Gomulkiewicz & Heckman, 2008). The technique works by fitting a function to the data and then running statistics on the coefficients of the approximating function, rather than the data itself.
 
-### Fitting a Polynomial Function to Data
+In a 1998 article W.G. Hill predicted that function-valued methods may eventuallly replace traditional multivariate methods in evolutionary biology. This guide aims to help introduce biolgists to the world of function-valued analysis through examples and hands-on activities.
+
+The code used to generate the data is available in `DataGeneration.R`.
+
+This introduction to function-valuied trait analysis is designed for biology students with some experience in R and a basic understanding of statistics. We begin by briefly introducing the theory behind function-valued analysis, and then promptly dive headlong into examples. At the end of this text there are recommended activities so that readers can acquaint themselves more fully with function-valued traits. These activities call on R code and data that has been generated in conjunction with this text.
+
+## Examples
+
+### Fitting a Function to Data
 
 If you've ever hit "add trendline" and "display equation on chart" in excel then you've already done this... sort of. Here we will explore how to fit a function to data in R.
 
-First, we need data. I have created a sample dataset comprised of the lengths of the mythical species of fish, R-ctic ch-R. This dataset has both random individual variance, and random measurement error, and details about how the data was generated have been outlined in my *Data Generation* document. Here is a plot of the data:
+First, we need data. I have created a sample dataset comprised of the lengths of the mythical species of fish, R-ctic ch-R. This dataset has both random individual variance, and random measurement error, and details about how the data was generated have been outlined in the *Data Generation* document. Here is a plot of the data:
 
 ```{r chR, include=FALSE}
 RcticChR <- function(a, k, g, x) {
@@ -65,16 +73,16 @@ for (i in 1:10) {
 }
 ```
 
-```{r pressure, echo=FALSE, fig.cap=fig$cap("R-ctic Ch-R 1", "A plot of the ten individuals in the first population of R-ctic Ch-R.")}
+```{r pressure, echo=FALSE, fig.cap=fig$cap("R-ctic Ch-R 1", "A plot of the ten male R-ctic Ch-R sampled.")}
 
 #cols <- c("#000000", "#332288", "#88CCEE", "#44AA99", "#117733", "#999933", "#DDCC77", "#CC6677", "#882255", "#AA4499")
 
 cols <- c("#000000", 2, 3, 4, 5, 6, 7, 8, "#882255", "darkolivegreen2")
 
-matplot(y = t(RcticChR1), type = 'p', lty = 1, pch = 16, main = "Males", ylab = "Length (m)", xlab = "Age (months)", las = 1, col = alpha(cols, 0.5))
+matplot(y = t(RcticChR1), type = 'p', lty = 1, pch = 16, main = "Males", ylab = "Length (cm)", xlab = "Age (months)", las = 1, col = alpha(cols, 0.5))
 ```
 
-Now that we have data we can fit various models to them. Let's begin with polynmial regression. For this we will focus on one individual, from one population of R-ctic ch-R. Let's take the first male and call him `RcticChR1ind1`.
+Now that we have data we can fit various models to them. Let's begin by fitting a series of polynomials to the data in a process called polynmial regression. For simplicity, we will focus on one individual, from one population of R-ctic ch-R. Let's take the first male, `RcticChR1ind1`.
 
 ```{r, include=FALSE}
 RcticChR1ind1 <- rep(NA, 20)
@@ -83,10 +91,23 @@ for (i in 1:20) {
 }
 ```
 
-Now, to fit a model to `RcticChR1ind1` we will use linear models function in R, but fear not, this function can do far more than merely slap on the closest linear approximation! To get a higher order polynomial approximation we need to specify the highest exponent in the polynomial approximation, denoted "n". Let's try n = 6.
+```{r, echo = FALSE, fig.cap=fig$cap("RcticChR1ind1", "A plot of the true and measured length of RcticChR1ind1.")}
+xvalues <- seq(from = 0.5, to = 10, by = 0.5) #This object will come up often so take 
+plot(y = RcticChR1ind1, x = xvalues, main = "RcticChR1ind1", ylab = "Length (cm)", xlab = "Age (months)", las = 1)
+curve(RcticChR(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
+legend("bottomright",c("Data", "True Function"), 
+       col = c("black", "red"), pch = c(1, NA), lwd = c(NA, 1), lty = c(1, 1))
+
+```
+
+
+In order to fit our polynomial model to `RcticChR1ind1` we will use the linear models function in R. Unlike its name suggests, the "linear model" function in R can do far more than merely slap on the closest linear approximation! We can get it to fit a polynomial of whatever order we desire by specifying the highest exponent in the model. 
 
 ```{r}
+#First we need to define the x-values,
+#In this case they represent the points in time when scientists measured the lengths of the fish.
 xvalues <- seq(from = 0.5, to = 10, by = 0.5) #This object will come up often so take note!
+#Now let's create an object for this model
 PolyModelPop1ind1 <- lm(RcticChR1ind1 ~ poly(x = xvalues, n = 6))
 ```
 
@@ -101,7 +122,7 @@ Now that we have a model we can plot it against the data to see how it holds up.
 First let's plot the data.
 
 ```{r, eval=FALSE}
-plot.new(y = RcticChR1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (m)", xlab = "Age (months)", las = 1)
+plot.new(y = RcticChR1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (cm)", xlab = "Age (months)", las = 1)
 ```
 
 Then add the secret function of the true length of RcticChR1ind1 used to generate the data.
@@ -126,7 +147,7 @@ legend("bottomright",c("Data", "True Fun.", "Predicted Fun.", "99% Conf. Int."),
 ```
 
 ```{r, echo=FALSE}
-plot(y = RcticChR1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (m)", xlab = "Age (months)", las = 1)
+plot(y = RcticChR1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (cm)", xlab = "Age (months)", las = 1)
 curve(RcticChR(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
 lines(inp,predicted.intervals[,1],col='green', lwd=3)
 lines(inp,predicted.intervals[,2],col=4, lwd=1, lty=2)
@@ -150,7 +171,7 @@ renderPlot({
   PolyModelPop1ind1 <- lm(RcticChR1ind1 ~ poly(x = inp, n = input$numb))
   predicted.intervals <- predict(PolyModelPop1ind1, data.frame(x=inp), interval='confidence', level=0.99)
   
-  plot(y = RcticChR1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (m)", xlab = "Age (months)", las = 1)
+  plot(y = RcticChR1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (cm)", xlab = "Age (months)", las = 1)
   curve(RcticChR(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
   lines(inp,predicted.intervals[,1],col='green', lwd=3)
   lines(inp,predicted.intervals[,2],col=4, lwd=1, lty=2)
@@ -164,11 +185,16 @@ It is important to note what happpens when n = 19. Here the approximate function
 
 ### Analysis
 
-Ok so we've got a model, but what is R actually doing?
+Ok so we've got a model, but what is R actually doing? Let's see what is in this mysterious object `PolyModelPop1ind1`.
 
-Under the hood, R is adding together a series of careflully chosen functions to get the best fit. Below is a visualization of the functions present when n = 6.
+```{r}
+PolyModelPop1ind1
+```
 
-```{r, echo=FALSE}
+Evaluating `PolyModelPop1ind1` we see that it is composed of seven `Coefficients`.
+Under the hood, R is adding together functions we told it to combine, namely, a costant, x, x^2^, x^3^, etc. up to x^6^. These `Coeffficients` correspond to the amplitudes of the functions making up the green curve shown in the figures above. In other words they tell us how much of each function is being added. Below is a visualization of the functions present when n = 6.
+
+```{r, echo=FALSE, fig.cap=fig$cap("Coefficients", "A plot of the functions making up the polynomial approximation of RcticChR1ind1's growth function.")}
 plot(1, type="n", xlab="", ylab="", xlim = c(0, 10), ylim = c(-50, 75))
 curve(1.63443*x, xlim = c(-1, 11), ylim = c(-55, 55), add = TRUE, col = 1)
 curve(-0.58209*x^2, to = 10, xlim = c(-1, 11), ylim = c(-55, 55), add = TRUE, col = 2)
@@ -180,14 +206,15 @@ abline(h=0.67789,col= "orange")
 legend("topright", c("Constant", "x", as.expression(bquote( ~ x^2 ~ "")), as.expression(bquote( ~ x^3 ~ "")), as.expression(bquote( ~ x^4 ~ "")), as.expression(bquote( ~ x^5 ~ "")), as.expression(bquote( ~ x^6 ~ ""))), col = c("orange", 1, 2, 3, 4, 5, 6), lty = c(1, 1, 1, 1, 1))
 ```
 
+Many of these functions get very big, very quickly, but when added together they make up a fair approximation of the length of `RcticChR1ind1`.
 
-First, we need to get R to describe the model function it's come up with in order to run our analyses. To do this we can get R to tell us the `ceofficients`. These `coeffficients` correspond to the amplitudes of 
+Now that we have gotten R to describe the model function it's come up with we are ready to run our analyses. These `Coeffficients` correspond to the amplitudes of the functions making up the green curve shown in the figures above.
 
-We are finally ready to broaden our scope from our friend 'RcticChR1ind1' and consider this example from a population level. By repeating the process outlined above for 'RcticChR1ind1' for all of the males
+We are finally ready to broaden our scope from our friend 'RcticChR1ind1' and consider this example from a population level. By repeating the process outlined above for all of the samples of the lengths of the males, we can collect a dataset of coefficients.
 
 ### Fitting a Sinusoidal Function to Data
 
-Okay so we fit a polynomial to the data, but is that really the best fit? In excel the user can choose from a selection of fits so let's try another. Here we will go beyond the capabilities of excel and fit a sinusoidal model to the data.
+Okay so we fit a polynomial to the data, but is that really the best fit? In excel the user can choose from a selection of fits so let's try another. Here we will go beyond the capabilities of Excel and fit a sinusoidal model to the data.
 
 To begin, we can use the function `spectrum` to get the spectral density of `RcticChR1ind1`.
 
@@ -263,6 +290,15 @@ lines(xvalues, PredictedIntervalsSin2[,3],col=4, lwd=1, lty=2)
 legend("bottomright",c("Data", "True Fun.", "First Harmonic", "Second Harmonic", "99% Conf. Int."), col = c("black", "red", "black", "green", 4), pch = c(1, NA, NA, NA, NA), lwd = c(NA, 1, 1, 3, 1), lty = c(1, 1, 1, 1, 2))
 ```
 
+###Under the Hood
+
+Now just as we did with the polynomial regression we can evaluate this model and take a look at the inner workings.
+
+```{r}
+SinModel2Pop1ind1
+```
+
+Even though we are no longer dealing with polynomials, this call still returns `Coefficients`. Just as before these are the amplitudes of various functions making up the model. Below is a plot of the functions that are being added together to form the model.
 
 ```{r, echo=FALSE}
 plot(1, type="n", xlab="", ylab="", xlim = c(0, 10), ylim = c(-2.0, 1.5))
@@ -272,3 +308,5 @@ curve(0.0227*sin(4 * pi/period * x), xlim = c(-1, 11), ylim = c(-2, 2), add = TR
 curve(-0.3423 *cos(4 * pi/period * x), xlim = c(-1, 11), ylim = c(-2, 2), add = TRUE, col = 4)
 abline(h=0.8813,col= "orange")
 ```
+
+## Activities
