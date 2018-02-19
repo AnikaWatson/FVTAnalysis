@@ -14,7 +14,9 @@ HotellingsT2(MonoData1, MonoData2)
 
 class(MonoData1)
 
-HotellingsT2(as.data.frame(PolyModel1), as.data.frame(PolyModel2))
+class(PolyModel1)
+
+HotellingsT2(PolyModel1, PolyModel2)
 
 HotellingsT2(CyclicData1, CyclicData2)
 #Hotelling's two sample T2-test

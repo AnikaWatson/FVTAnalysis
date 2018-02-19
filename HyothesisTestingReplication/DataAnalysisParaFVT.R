@@ -69,18 +69,31 @@ for (l in 1:10) {
 
 #make the model
 
-PolyModel2 <- data.frame(matrix(data=NA,nrow=4,ncol=10))
+PolyModel1 <- data.frame(matrix(data=NA,nrow=7,ncol=10))
 
 for (l in 1:10) {
-  PolyModel2[l] <- coefficients(lm(Mono2ind[l,] ~ poly(x = inp, n = 3)))
+  PolyModel1[l] <- coefficients(lm(Mono1ind[l,] ~ poly(x = inp, n = 6)))
 }
+
+
+
+#make the model for second population
+
+PolyModel2 <- data.frame(matrix(data=NA,nrow=7,ncol=10))
+
+for (l in 1:10) {
+  PolyModel2[l] <- coefficients(lm(Mono2ind[l,] ~ poly(x = inp, n = 6)))
+}
+
+#Compare the two
+HotellingsT2(PolyModel1, PolyModel2)
 
 
 #Now let's make the data frame of coefficients for the second MonoGrowth population
 Mono2ind <- matrix(data=NA,nrow=10,ncol=20)
 
 
-class(coefficients(lm(Mono2ind[l,] ~ poly(x = inp, n = 3))))
+class(coefficients(lm(Mono2ind[l,] ~ poly(x = inp, n = 6))))
 
 for (l in 1:10) {
   for (i in 1:20) {
@@ -90,7 +103,7 @@ for (l in 1:10) {
 
 #make the model
 
-PolyModel2 <- data.frame(matrix(data=NA,nrow=4,ncol=10))
+PolyModel2 <- data.frame(matrix(data=NA,nrow=7,ncol=10))
 
 for (l in 1:10) {
   PolyModel2[l] <- coefficients(lm(Mono2ind[l,] ~ poly(x = inp, n = 3)))

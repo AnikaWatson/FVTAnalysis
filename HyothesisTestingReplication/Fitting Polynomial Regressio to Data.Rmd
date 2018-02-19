@@ -71,8 +71,6 @@ for (i in 1:10) {
   Mono1akg[i,2] <- k1+IndiDev[2]
   Mono1akg[i,3] <- g1+IndiDev[3]
 }
-colnames(RcticChR1) <- inp
-
 ```
 
 ```{r pressure, echo=FALSE, fig.cap=fig$cap("R-ctic Ch-R 1", "A plot of the ten male R-ctic Ch-R sampled.")}
@@ -218,12 +216,20 @@ We are finally ready to broaden our scope from our friend 'RcticChR1ind1' and co
 #Take the data frame of the sample lengths
 RcticChR1
 
+Mono1ind <- matrix(data=NA,nrow=10,ncol=20)
+
+for (l in 1:10) {
+  for (i in 1:20) {
+    Mono1ind[l,i] <- RcticChR1[l,i]
+  }
+}
+
 #and make an empty data frame for the coefficients
 PolyModel1 <- data.frame(matrix(data=NA,nrow=7,ncol=10))
 
 #Now we can fill the empty data frame with the coefficients from the RcticChR1 sample
 for (l in 1:10) {
-  PolyModel1[l] <- coefficients(lm(RcticChR1[l,] ~ poly(x = xvalues, n = 6)))
+  PolyModel1[l] <- coefficients(lm(Mono1ind[l,] ~ poly(x = xvalues, n = 6)))
 }
 
 #Let's take a look at what we've got
@@ -257,7 +263,7 @@ for (i in 1:10) {
   MonoError <- rnorm(n=20, mean=0, sd=0.04) #measurement error
   IndiDev <- rnorm(n=3, mean=0, sd=0.2) #individual deviation from population mean
   for (l in 1:20){
-    MonoData2[i,l] <- MonoGrowth(a2+IndiDev[1], k2+IndiDev[2], g2+IndiDev[3], (l/2)) + MonoError[l]
+    MonoData2[i,l] <- RcticChR(a2+IndiDev[1], k2+IndiDev[2], g2+IndiDev[3], (l/2)) + MonoError[l]
   }
   Mono2akg[i,1] <- a2+IndiDev[1]
   Mono2akg[i,2] <- k2+IndiDev[2]
@@ -274,6 +280,7 @@ for (l in 1:10) {
 ```
 
 ```{r}
+library("ICSNP")
 HotellingsT2(PolyModel1, PolyModel2)
 ```
 
