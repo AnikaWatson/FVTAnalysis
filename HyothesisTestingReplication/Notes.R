@@ -307,3 +307,48 @@ curve(0.03007*x^6, to = 10, xlim = c(-1, 11), ylim = c(-55, 55), add = TRUE, col
 abline(h=0.67789,col= "orange")
 legend("topright", c("Constant", "x", as.expression(bquote( ~ x^2 ~ "")), as.expression(bquote( ~ x^3 ~ "")), as.expression(bquote( ~ x^4 ~ "")), as.expression(bquote( ~ x^5 ~ "")), as.expression(bquote( ~ x^6 ~ ""))), col = c("orange", 1, 2, 3, 4, 5, 6), lty = c(1, 1, 1, 1, 1))
 ```
+
+
+Gauss <- function(x) {
+  1.07*exp((-(x^2)) / (2*(40^2)))
+}
+
+Sine <- function(x) {
+  (1.07/2)+(1.07/2)*cos(2*pi*(x)/180)
+}
+
+SolDataY <- c(1.07, 1, .92, .82, .67, .48, .35, .16, .06, .02)
+
+SolDataX <- seq(0, 90, 10)
+
+plot(SolDataX, SolDataY, xlim = c(0, 90), add = TRUE)
+curve(Gauss(x), from = 0, to = 90, add = TRUE)
+
+plot(SolDataX, SolDataY, xlim = c(0, 90), add = TRUE)
+curve(Sine(x), from = 0, to = 90, add = TRUE)
+
+
+curve(Sine(x), from = 0, to = 90)
+
+t <- SolDataX
+ssp <- spectrum(SolDataY)  
+per <- 1/ssp$freq[ssp$spec==max(ssp$spec)]
+reslm <- lm(SolDataY ~ sin(2*pi/per*SolDataX)+cos(2*pi/per*SolDataX))
+reslm
+
+rg <- diff(range(SolDataY))
+plot(SolDataY~SolDataX, ylim=c(min(SolDataY)-0.1*rg, max(SolDataY)+0.1*rg), las=1)
+lines(fitted(reslm)~SolDataX, col=2, lty=2, lwd = 2)   # dashed blue line is sin fit
+curve(MonoGrowth(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "black")
+
+
+# including 2nd harmonic really improves the fit
+reslm2 <- lm(SolDataY ~ sin(2*pi/per*SolDataX)+cos(2*pi/per*SolDataX)+sin(4*pi/per*SolDataX)+cos(4*pi/per*SolDataX))
+summary(reslm2)
+lines(fitted(reslm2)~SolDataX, col = "green", lwd = 3)
+
+
+predicted.intervals <- predict(reslm2, data.frame(x=SolDataX),interval='confidence',
+                               level=0.99)
+lines(SolDataX,predicted.intervals[,2],col=4, lwd=1, lty=2)
+lines(SolDataX,predicted.intervals[,3],col=4, lwd=1, lty=2)

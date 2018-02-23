@@ -1,0 +1,21 @@
+---
+title: "Practice in R"
+author: "Anika Watson"
+date: '2018-02-23'
+output: html_document
+---
+##Exercises:
+1. Manipulate the following function, adding/removing terms, changing coefficients etc. and plot the results to gain an intuition for polynomials.
+```{r}
+polynomial <- function(x) {
+  0 + x + 2*x^2 + 3*x^3 +4*x^4 +5*x^5 + 6*x^6
+}
+```
+
+
+##Practice Problems:
+1. a) Open the sample dataset CatTemp1.csv representing the growth rate of Freija Fritillary caterpillars as a function of temperature and write a program that fits a polynomial to the data. (Growth rate (mg day^–1^))
+      b) Use your program to fit a polynomial to the data in CatTemp2.csv representing the growth rate of the Stella Orange Tip as a function of temperature and compare these populations using multivariate and function-valued methods.
+      c) Plot the data of both populations, and their polynomial approximations on the same graph. Does it look like there ought to be a 
+    d) TroubleShooting: Iport the data into Excel and use the plotting function to fit a polynomial of bestfit to the data. Do Excel's coefficients match those you found in R?
+2. Determine whether or not there is a significant diference between the datasets:

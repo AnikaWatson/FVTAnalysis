@@ -36,14 +36,11 @@ library(shiny)
 
 Many biological traits are not scalar variables but continuous functions (Griswold, Gomulkiewicz & Heckman, 2008; Stinchcombe & Kirkpatrick, 2012; Hadjipantelis et al., 2013). Size, for instance, can be described as a function of age, fur thickness, a function of ambient temperature, and so on. Scientific articles in the sphere of function-valued analysis argue that treating such traits as continuous functions provides substantially greater statistical power and other clear advantages over multivariate approaches (Stinchcombe & Kirkpatrick, 2012; Griswold, Gomulkiewicz & Heckman, 2008). The technique works by fitting a function to the data and then running statistics on the coefficients of the approximating function, rather than the data itself.
 
-In a 1998 article W.G. Hill predicted that function-valued methods may eventuallly replace traditional multivariate methods in evolutionary biology. This guide aims to help introduce biolgists to the world of function-valued analysis through examples and hands-on activities.
+If this method sounds foreign to you, you are not alone, many successful biologists have never encountered it. The reason for its obscurity is not  that it's some new-fangled thing, just hitting the market. This approach first appeared in literature as far back as 1989 when Mark Kirkpatrick and David Lofsvold noticed that many evolutionarily important traits could be described as functions (Kirkpatrick & Lofsvol, 1989). This caught the eyes of breeders, biologists and statisticians gaining support from various fields. In a 1998 article W.G. Hill even went so far as to predict that function-valued methods may eventuallly replace traditional multivariate methods in evolutionary biology (Griswold, Gomulkiewicz & Heckman, 2008). By the next year the term "function-valued traits" had been coined (Pletcher and Geyer, 1999). 
 
-The code used to generate the data is available in `DataGeneration.R`.
+According to a paper by the "Function-valued Traits Working Group," the function-valued perspective receives such praise because it "offers enhanced statistical power, greater ability to detect genetic constraints, and improved understanding of phenotypic and genetic variation in environmentally sensitive traits" compared to traditional multivariate methods (Stinchcombe & Kirkpatrick, 2012). These advantages come from the fact that fitting a function to data takes into account the ordering and spacing of the data where multivariable methods ignore this information (Griswold, Gomulkiewicz & Heckman, 2008), and because fitting a curve to data smothes noise, reducing its effects on analysis (Stinchcombe & Kirkpatrick, 2012). Another advantage of function-valued analysis is that it does not care which points the researcher selected to sample their data. One can just as easily fit a curve estimating the growth of a plant if its height is neasured on odd days, as if its height were to be easured on even days. This allows for comparison between data sets with different numbers of samples, and whose samples were taken at different points.
 
-This introduction to function-valuied trait analysis is designed for biology students with some experience in R and a basic understanding of statistics. We begin by briefly introducing the theory behind function-valued analysis, and then promptly dive headlong into examples. At the end of this text there are recommended activities so that readers can acquaint themselves more fully with function-valued traits. These activities call on R code and data that has been generated in conjunction with this text.
-
-## Literature
-The term "function-valued traits" was initially coined in 1989 by Mark Kirkpatrick and David Lofsvold 
+Despite these clear advantages, and Hill's prediction, function-valued trait analysis still hasn't taken off. The "Function-valued Traits Working Group," listed two major limitations in 2012 that have yet to be thoroughly addressed. Firstly, the cost of additional measurements required to estimate functions presents a challenge, and secondly a general unfamiliarity with function-valued analyses is limiting its uptake by scientists (Stinchcombe & Kirkpatrick, 2012). As a step towards solving the second challenge, this guide aims to serve as an introduction to function-valued traits, and function-valued trait analysis. This resource is designed for biology students with some experience in R and a basic understanding of statistics. We begin by diving headlong into examples and sorting through the theory as we go. At the end of this text there are recommended activities and example problems so that readers can acquaint themselves more fully with function-valued traits. These activities call on R code and data that has been generated in conjunction with this text.
 
 ## Examples
 
@@ -55,7 +52,7 @@ First, we need data. I have created a sample dataset comprised of the lengths of
 
 ```{r chR, include=FALSE}
 RcticChR <- function(a, k, g, x) {
-  a*exp(-exp(-k*(x-g)))-exp(-exp(-k*(-g)))
+  10*(a*exp(-exp(-k*(x-g)))-exp(-exp(-k*(-g))))
 }
 inp <- seq(from = 0.5, to = 10, by = 0.5)
 a1 <- 1
@@ -82,7 +79,7 @@ for (i in 1:10) {
 
 cols <- c("#000000", 2, 3, 4, 5, 6, 7, 8, "#882255", "darkolivegreen2")
 
-matplot(y = t(RcticChR1), type = 'p', lty = 1, pch = 16, main = "Males", ylab = "Length (cm)", xlab = "Age (months)", las = 1, col = alpha(cols, 0.5))
+matplot(y = t(RcticChR1), type = 'p', lty = 1, pch = 16, main = "Males", ylab = "Length (cm)", xlab = "Age (weeks)", las = 1, col = alpha(cols, 0.5))
 ```
 
 Now that we have data we can fit various models to them. Let's begin by fitting a series of polynomials to the data in a process called polynmial regression. For simplicity, we will focus on one individual, from one population of R-ctic ch-R. Let's take the first male, `RcticChR1ind1`.
@@ -96,9 +93,9 @@ for (i in 1:20) {
 
 ```{r, echo = FALSE, fig.cap=fig$cap("RcticChR1ind1", "A plot of the true and measured length of RcticChR1ind1.")}
 xvalues <- seq(from = 0.5, to = 10, by = 0.5) #This object will come up often so take 
-plot(y = RcticChR1ind1, x = xvalues, main = "RcticChR1ind1", ylab = "Length (cm)", xlab = "Age (months)", las = 1)
+plot(y = RcticChR1ind1, x = xvalues, main = "RcticChR1ind1", ylab = "Length (cm)", xlab = "Age (weeks)", las = 1)
 curve(RcticChR(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
-legend("bottomright",c("Data", "True Function"), 
+legend("bottomright",c("Measured Length", "True Length"), 
        col = c("black", "red"), pch = c(1, NA), lwd = c(NA, 1), lty = c(1, 1))
 
 ```
@@ -125,7 +122,7 @@ Now that we have a model we can plot it against the data to see how it holds up.
 First let's plot the data.
 
 ```{r, eval=FALSE}
-plot.new(y = RcticChR1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (cm)", xlab = "Age (months)", las = 1)
+plot.new(y = RcticChR1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (cm)", xlab = "Age (weeks)", las = 1)
 ```
 
 Then add the secret function of the true length of RcticChR1ind1 used to generate the data.
@@ -145,17 +142,17 @@ lines(inp,predicted.intervals[,3],col=4, lwd=1, lty=2)
 Throw in a legend and we're good to go.
 
 ```{r, eval=FALSE}
-legend("bottomright",c("Data", "True Fun.", "Predicted Fun.", "99% Conf. Int."), 
+legend("bottomright",c("Measured Length", "True Length", "Predicted Length", "99% Confidence Interval"), 
        col = c("black", "red", "green", 4), pch = c(1, NA, NA, NA), lwd = c(NA, 1, 3, 1), lty = c(1, 1, 1, 2))
 ```
 
-```{r, echo=FALSE}
-plot(y = RcticChR1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (cm)", xlab = "Age (months)", las = 1)
+```{r, echo=FALSE, fig.cap=fig$cap("R-ctic Ch-R 1", "The polynomial fit as compares to the real function and the measured data.")}
+plot(y = RcticChR1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (cm)", xlab = "Age (weeks)", las = 1)
 curve(RcticChR(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
 lines(inp,predicted.intervals[,1],col='green', lwd=3)
 lines(inp,predicted.intervals[,2],col=4, lwd=1, lty=2)
 lines(inp,predicted.intervals[,3],col=4, lwd=1, lty=2)
-legend("bottomright",c("Data", "True Fun.", "Predicted Fun.", "99% Conf. Int."), 
+legend("bottomright",c("Measured Length", "True Length", "Predicted Length", "99% Confidence Intervals"), 
        col = c("black", "red", "green", 4), pch = c(1, NA, NA, NA), lwd = c(NA, 1, 3, 1), lty = c(1, 1, 1, 2))
 
 
@@ -168,18 +165,18 @@ sliderInput("numb", label = "Polynomial Degree", min = 1, max = 19, value = 6, s
 ```
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.cap=fig$cap("R-ctic Ch-R 1", "An interactive plot demonstrating the change in shape of the polynimial fit as the number of terms in the approximating polynomial is adjusted.")}
 
 renderPlot({
   PolyModelPop1ind1 <- lm(RcticChR1ind1 ~ poly(x = inp, n = input$numb))
   predicted.intervals <- predict(PolyModelPop1ind1, data.frame(x=inp), interval='confidence', level=0.99)
   
-  plot(y = RcticChR1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (cm)", xlab = "Age (months)", las = 1)
+  plot(y = RcticChR1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (cm)", xlab = "Age (weeks)", las = 1)
   curve(RcticChR(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
   lines(inp,predicted.intervals[,1],col='green', lwd=3)
   lines(inp,predicted.intervals[,2],col=4, lwd=1, lty=2)
   lines(inp,predicted.intervals[,3],col=4, lwd=1, lty=2)
-  legend("bottomright",c("Data", "True Fun.", "Predicted Fun.", "99% Conf. Int."), col = c("black", "red", "green", 4), pch = c(1, NA, NA, NA), lwd = c(NA, 1, 3, 1), lty = c(1, 1, 1, 2))
+  legend("bottomright",c("Measured Length", "True Length", "Predicted Length", "99% Confidence Intervals"), col = c("black", "red", "green", 4), pch = c(1, NA, NA, NA), lwd = c(NA, 1, 3, 1), lty = c(1, 1, 1, 2))
 })
 
 ```
@@ -188,7 +185,7 @@ It is important to note what happpens when n = 19. Here the approximate function
 
 ### Analysis
 
-Ok so we've got a model, but what is R actually doing? Let's see what is in this mysterious object `PolyModelPop1ind1`.
+Ok so we've got a model, but what is R actually doing? Let's see what is in this mysterious object "`PolyModelPop1ind1`".
 
 ```{r}
 PolyModelPop1ind1
@@ -211,14 +208,28 @@ legend("topright", c("Constant", "x", as.expression(bquote( ~ x^2 ~ "")), as.exp
 
 Many of these functions get very big, very quickly, but when added together they make up a fair approximation of the length of `RcticChR1ind1`.
 
-Now that we have gotten R to describe the model function it's come up with we are ready to run our analyses. These `Coeffficients` correspond to the amplitudes of the functions making up the green curve shown in the figures above.
-
-We are finally ready to broaden our scope from our friend 'RcticChR1ind1' and consider this example from a population level. By repeating the process outlined above for all of the samples of the lengths of the males, we can collect a dataset of coefficients.
+Now that we have gotten R to describe the model function it's come up with, we are finally ready to broaden our scope from our friend 'RcticChR1ind1' and consider theis entire sample. By repeating the process outlined above for all of the samples of the lengths of male Rctic ChR, we can collect a dataset of coefficients.
 
 ```{r}
 #Take the data frame of the sample lengths
-RcticChR1
+str(RcticChR1)
 
+#and make an empty data frame for the coefficients
+PolyModel1 <- data.frame(matrix(data=NA,nrow=7,ncol=10))
+
+#Now we can fill the empty data frame with the coefficients from the RcticChR1 sample
+for (l in 1:10) {
+  PolyModel1[l] <- coefficients(lm(as.matrix(RcticChR1)[l,] ~ poly(x = xvalues, n = 6)))
+}
+
+#Let's take a look at what we've got
+str(PolyModel1)
+```
+
+Here we see that the data frame of coefficients is much more concise than the data frame of the data, but this does not mean that information is lost. (Note that where X10 marked the 10th measurement in the data frame `RcticChR1`, it now marks the 10th individual in `PolyModel1`).
+
+Now let's run an analysis between this sample and that of the female Rctic ChR.
+```{r, include=FALSE}
 Mono1ind <- matrix(data=NA,nrow=10,ncol=20)
 
 for (l in 1:10) {
@@ -227,22 +238,6 @@ for (l in 1:10) {
   }
 }
 
-#and make an empty data frame for the coefficients
-PolyModel1 <- data.frame(matrix(data=NA,nrow=7,ncol=10))
-
-#Now we can fill the empty data frame with the coefficients from the RcticChR1 sample
-for (l in 1:10) {
-  PolyModel1[l] <- coefficients(lm(Mono1ind[l,] ~ poly(x = xvalues, n = 6)))
-}
-
-#Let's take a look at what we've got
-PolyModel1
-```
-
-Here we see that the data frame of coefficients is much more concise than the data frame of the data, but this does not mean that information is lost.
-
-Now let's run an analysis between this sample and that of the female Rctic ChR.
-```{r, include=FALSE}
 a2 <- 1.4
 k2 <- 1
 g2 <- 2.6
@@ -254,10 +249,10 @@ g2 <- 2.6
 #g1 <- 3
 
 #Once again we need to build a data frame for our data
-MonoData2 <- data.frame(matrix(NA, nrow=100, ncol=20))
+RcticChR2 <- data.frame(matrix(NA, nrow=10, ncol=20))
 
 #and one to keep track of what a, k, and g are for each individual in this population
-Mono2akg <- data.frame(matrix(NA, nrow=100, ncol=3))
+Mono2akg <- data.frame(matrix(NA, nrow=10, ncol=3))
 
 
 #Time to fill these frames
@@ -266,31 +261,57 @@ for (i in 1:10) {
   MonoError <- rnorm(n=20, mean=0, sd=0.04) #measurement error
   IndiDev <- rnorm(n=3, mean=0, sd=0.2) #individual deviation from population mean
   for (l in 1:20){
-    MonoData2[i,l] <- RcticChR(a2+IndiDev[1], k2+IndiDev[2], g2+IndiDev[3], (l/2)) + MonoError[l]
+    RcticChR2[i,l] <- RcticChR(a2+IndiDev[1], k2+IndiDev[2], g2+IndiDev[3], (l/2)) + MonoError[l]
   }
   Mono2akg[i,1] <- a2+IndiDev[1]
   Mono2akg[i,2] <- k2+IndiDev[2]
   Mono2akg[i,3] <- g2+IndiDev[3]
 }
-
-#and make an empty data frame for the coefficients
-PolyModel2 <- data.frame(matrix(data=NA,nrow=7,ncol=10))
-
-#Now we can fill the empty data frame with the coefficients from the RcticChR1 sample
-for (l in 1:10) {
-  PolyModel2[l] <- coefficients(lm(Mono1ind[l,] ~ poly(x = xvalues, n = 6)))
-}
 ```
 
 ```{r}
+#Once again let's make an empty data frame for our coefficients
+PolyModel2 <- data.frame(matrix(data=NA,nrow=7,ncol=10))
+
+#and fill the empty data frame with the coefficients from the RcticChR2 sample
+for (l in 1:10) {
+  PolyModel2[l] <- coefficients(lm(as.matrix(RcticChR2)[l,] ~ poly(x = xvalues, n = 6)))
+}
+
+#Let's check this to make sure it worked
+str(PolyModel2)
+```
+
+Before we go any further we will need to install a package in order to be able to run a Hotellings T^2^ test.
+
+```{r, include=FALSE}
 library("ICSNP")
+```
+
+```{r, eval=FALSE}
+library("ICSNP")
+```
+
+Now we are ready to run the test!
+
+```{r}
 HotellingsT2(PolyModel1, PolyModel2)
 ```
 
 
-### Fitting a Sinusoidal Function to Data
+According to this result we have failed to reject the null hypothesis that the sizes of female and male populations of Rctic ChR differ significantly. Before we conclude let us plot these two samples together to see whether or not this is a reasonable outocome.
 
-Okay so we fit a polynomial to the data, but is that really the best fit? In excel the user can choose from a selection of fits so let's try another. Here we will go beyond the capabilities of Excel and fit a sinusoidal model to the data.
+```{r, fig.cap=fig$cap("Male vs. Female", "A comparison of male and female Rctic ChR lengths")}
+matplot(y = t(RcticChR1), type = 'p', lty = 1, pch = 10, ylab = "Length (cm)", xlab = "Age (weeks)", las = 1, col = 1, ylim = c(0, 20))
+matplot(y = t(RcticChR2), type = 'p', lty = 1, pch = 1, las = 1, col = 2, add = TRUE)
+legend("bottomright",c("Males", "Females"), col = c("black", "red"), pch = c(10, 1))
+```
+
+There is a significant amount of overlap between these measurements of males and females which sipports our calculation that we cannot reject the null hypothesis.
+
+### Fitting a Sinusoidal Function to Data (still in the works)
+
+Okay so we fit a polynomial to the data, but is that really the best fit? In e]Excel the user can choose from a selection of fits to suit their data. Let's not be outdone by a comouter program! Here we will go beyond the capabilities of Excel and fit a sinusoidal model to the data.
 
 To begin, we can use the function `spectrum` to get the spectral density of `RcticChR1ind1`.
 
@@ -319,7 +340,7 @@ PredictedIntervalsSin <- predict(SinModelPop1ind1, data.frame(x = xvalues),inter
 Now we're ready to plot our model. We can start by plotting the data and true function as before.
 
 ```{r, tidy=TRUE, eval=FALSE}
-plot(y = RcticChR1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (m)", xlab = "Age (months)", las = 1)
+plot(y = RcticChR1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (cm)", xlab = "Age (weeks)", las = 1)
 curve(RcticChR(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
 ```
 
@@ -332,17 +353,17 @@ lines(fitted(SinModelPop1ind1)~xvalues, col='green', lwd=3)
 lines(xvalues, PredictedIntervalsSin[,2],col=4, lwd=1, lty=2)
 lines(xvalues, PredictedIntervalsSin[,3],col=4, lwd=1, lty=2)
 
-legend("bottomright",c("Data", "True Fun.", "Predicted Fun.", "99% Conf. Int."), col = c("black", "red", "green", 4), pch = c(1, NA, NA, NA), lwd = c(NA, 1, 3, 1), lty = c(1, 1, 1, 2))
+legend("bottomright",c("Measured Length", "True length", "Predicted length", "99% Confidence Interval"), col = c("black", "red", "green", 4), pch = c(1, NA, NA, NA), lwd = c(NA, 1, 3, 1), lty = c(1, 1, 1, 2))
 
 ```
 
 ```{r, echo=FALSE}
-plot(y = RcticChR1ind1, x = xvalues, main = "Sinusoidal Regression", ylab = "Length (m)", xlab = "Age (months)", las = 1)
+plot(y = RcticChR1ind1, x = xvalues, main = "Sinusoidal Regression", ylab = "Length (cm)", xlab = "Age (weeks)", las = 1)
 curve(RcticChR(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
 lines(fitted(SinModelPop1ind1)~xvalues, col='green', lwd=3)
 lines(xvalues, PredictedIntervalsSin[,2],col=4, lwd=1, lty=2)
 lines(xvalues, PredictedIntervalsSin[,3],col=4, lwd=1, lty=2)
-legend("bottomright",c("Data", "True Fun.", "Predicted Fun.", "99% Conf. Int."), col = c("black", "red", "green", 4), pch = c(1, NA, NA, NA), lwd = c(NA, 1, 3, 1), lty = c(1, 1, 1, 2))
+legend("bottomright",c("Measured Length", "True Length", "Predicted Length", "99% Confidence Interval"), col = c("black", "red", "green", 4), pch = c(1, NA, NA, NA), lwd = c(NA, 1, 3, 1), lty = c(1, 1, 1, 2))
 
 ```
 
@@ -357,26 +378,26 @@ PredictedIntervalsSin2 <- predict(SinModel2Pop1ind1, data.frame(x = xvalues),int
 Now let's plot this and see how our approximation improves.
 
 ```{r}
-plot(y = RcticChR1ind1, x = xvalues, main = "Sinusoidal Regression", ylab = "Length (m)", xlab = "Age (months)", las = 1)
+plot(y = RcticChR1ind1, x = xvalues, main = "Sinusoidal Regression", ylab = "Length (cm)", xlab = "Age (weeks)", las = 1)
 curve(RcticChR(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
 lines(fitted(SinModelPop1ind1)~xvalues, col="black", lwd=1)
 lines(fitted(SinModel2Pop1ind1)~xvalues, col='green', lwd=3)
 lines(xvalues, PredictedIntervalsSin2[,2],col=4, lwd=1, lty=2)
 lines(xvalues, PredictedIntervalsSin2[,3],col=4, lwd=1, lty=2)
-legend("bottomright",c("Data", "True Fun.", "First Harmonic", "Second Harmonic", "99% Conf. Int."), col = c("black", "red", "black", "green", 4), pch = c(1, NA, NA, NA, NA), lwd = c(NA, 1, 1, 3, 1), lty = c(1, 1, 1, 1, 2))
+legend("bottomright",c("Measured Length", "True Length", "First Harmonic", "Second Harmonic", "99% Confidence Interval"), col = c("black", "red", "black", "green", 4), pch = c(1, NA, NA, NA, NA), lwd = c(NA, 1, 1, 3, 1), lty = c(1, 1, 1, 1, 2))
 ```
 
 ###Under the Hood
 
 Now just as we did with the polynomial regression we can evaluate this model and take a look at the inner workings.
 
-```{r}
+```{r, eval=FALSE}
 SinModel2Pop1ind1
 ```
 
 Even though we are no longer dealing with polynomials, this call still returns `Coefficients`. Just as before these are the amplitudes of various functions making up the model. Below is a plot of the functions that are being added together to form the model.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, eval=FALSE}
 plot(1, type="n", xlab="", ylab="", xlim = c(0, 10), ylim = c(-2.0, 1.5))
 curve(-0.3638*sin(2 * pi/period * x), xlim = c(-1, 11), ylim = c(-2, 2), add = TRUE, col = 1)
 curve(-0.5538*cos(2 * pi/period * x), xlim = c(-1, 11), ylim = c(-2, 2), add = TRUE, col = 2)
@@ -386,3 +407,19 @@ abline(h=0.8813,col= "orange")
 ```
 
 ## Activities
+###Exercises:
+1. Manipulate the following function, adding/removing terms, changing coefficients etc. and plot the results to gain an intuition for polynomials.
+```{r}
+polynomial <- function(x) {
+  0 + x + 2*x^2 + 3*x^3 +4*x^4 +5*x^5 + 6*x^6
+}
+```
+
+###Practice Problems:
+1. a) Open the sample dataset CatTemp1.csv representing the growth rate of Freija Fritillary caterpillars as a function of temperature and write a program that fits a polynomial to the data. (Growth rate (mg day^–1^))
+      b) Use your program to fit a polynomial to the data in CatTemp2.csv representing the growth rate of the Stella Orange Tip as a function of temperature and compare these populations using multivariate and function-valued methods.
+      c) Plot the data of both populations, and their polynomial approximations on the same graph. Does it look like there ought to be a 
+    d) TroubleShooting: Iport the data into Excel and use the plotting function to fit a polynomial of bestfit to the data. Do Excel's coefficients match those you found in R?
+    
+2. Determine whether or not there is a significant diference between the datasets:
+(Still need to get it to export nicely but I want this to be the cyclic functions that I have defned, and I want erratic measurements to make it difficult to test a significant difference between the populations without using FVT analysis).
