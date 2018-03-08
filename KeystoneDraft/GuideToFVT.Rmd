@@ -1,9 +1,8 @@
 ---
-title: "Introduction to Function-Valued Analysis"
+title: "A Practical Guide to Function-Valued Traits"
 author: "Anika Watson"
-date: '2018-01-16'
-runtime: shiny
-output: html_document
+date: '2018-03-08'
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -19,7 +18,7 @@ fig <- local({
         cap=function(refName, text) {
             i <<- i + 1
             ref[[refName]] <<- i
-            paste("Figure ", i, ": ", text, sep="")
+            paste(text)
         },
         ref=function(refName) {
             ref[[refName]]
@@ -191,18 +190,13 @@ legend("bottomright",c("Measured Length", "True Length", "Predicted Length", "99
 
 ```
 
-This green line seems like a reasonable fit. But what if we hadn't chosen n=6? How did that arbitrary decision impact the model? Slide the toggle below to see for yourself.
-
-```{r, echo=FALSE}
-sliderInput("numb", label = "Polynomial Degree", min = 1, max = 19, value = 6, step = 1, animate = T)
-```
-
+This green line seems like a reasonable fit. But what if we hadn't chosen n = 6? How did that arbitrary decision impact the model? Let's take it to the max, n = 19, and see what happens.
 
 ```{r, echo=FALSE, fig.cap=fig$cap("R-ctic Ch-R 1", "An interactive plot demonstrating the change in shape of the polynimial fit as the number of terms in the approximating polynomial is adjusted.")}
 
-renderPlot({
-  PolyModelPop1ind1 <- lm(RcticChR1ind1 ~ poly(x = inp, n = input$numb))
-  predicted.intervals <- predict(PolyModelPop1ind1, data.frame(x=inp), interval='confidence', level=0.99)
+
+PolyModelPop1ind1 <- lm(RcticChR1ind1 ~ poly(x = inp, n = 19))
+predicted.intervals <- predict(PolyModelPop1ind1, data.frame(x=inp), interval='confidence', level=0.99)
   
   plot(y = RcticChR1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (cm)", xlab = "Age (weeks)", las = 1)
   curve(RcticChR(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
@@ -210,7 +204,7 @@ renderPlot({
   lines(inp,predicted.intervals[,2],col=4, lwd=1, lty=2)
   lines(inp,predicted.intervals[,3],col=4, lwd=1, lty=2)
   legend("bottomright",c("Measured Length", "True Length", "Predicted Length", "99% Confidence Intervals"), col = c("black", "red", "green", 4), pch = c(1, NA, NA, NA), lwd = c(NA, 1, 3, 1), lty = c(1, 1, 1, 2))
-})
+
 
 ```
 

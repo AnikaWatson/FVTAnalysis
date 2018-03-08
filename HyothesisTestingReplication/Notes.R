@@ -352,3 +352,5 @@ predicted.intervals <- predict(reslm2, data.frame(x=SolDataX),interval='confiden
                                level=0.99)
 lines(SolDataX,predicted.intervals[,2],col=4, lwd=1, lty=2)
 lines(SolDataX,predicted.intervals[,3],col=4, lwd=1, lty=2)
+
+plot(fft(Mono1ind1))
