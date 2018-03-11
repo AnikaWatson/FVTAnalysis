@@ -2,11 +2,19 @@
 title: "A Practical Guide to Function-Valued Traits"
 author: "Anika Watson"
 date: '2018-03-08'
-output: pdf_document
+output:
+  rmarkdown::pdf_document:
+    fig_caption: yes        
+    includes:  
+      in_header: preamble-latex.tex
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r echo=FALSE,warning=FALSE}
+ library(knitr)
+  opts_chunk$set(echo = TRUE,
+                 external=TRUE,
+                 fig.pos='H'
+                 )
 ```
 
 ```{r functions, include=FALSE}
@@ -36,7 +44,7 @@ library(shiny)
 
 Despite our best attempts to conduct thorough studies, many biologists are unwittingly throwing away valuable data on a regular basis. One major cause for this loss is that many biological traits are often described by single measurements when they are, in fact, too complex for such a simple framework. Consider, for instance, that you are comparing two populations of spinach to determine if the leaf sizes differ significantly. An obvious method to conduct this experiment would be to measure the length or area of mature leaves and compare the averages of the two populations with a t-test. This, however, ignores the fact that one population might grow to maturity well before the other does, even if the two populations reach roughly the same size in the end Figure 1. In such a case, the t-test would support a rejection of the null hypothesis when, in fact, the populations did differ significantly, not in the overall amount of growth performed by each leaf, but by the underlying growth curves. Traits of this type that can be described as functions have been termed function-valued traits (Pletcher and Geyer 1999. Treating these traits as functions, rather than single data points, has many statistical advantages including increased power and others, which we will discuss shortly (Stinchcombe et al., 2012; Griswoldet al., 2008). Unfortunately, due to its perceived mathematical sophistication biologists have been hesitant to adopt function-valued methods. The good news is that even relatively simple function-valued analyses can provide valuable insight compared to traditional approaches (Griswold et al., 2008; Baker et al., 2015). This guide aims to serve as an introduction to function-valued trait analysis providing thorough examples including R code to dispel fear of this topic.
 
-```{r, echo=FALSE, fig.cap=fig$cap("Growth of spinach leaves1", "A plot of the leaf lengths of two populations of spinach.")}
+```{r, echo=FALSE, fig.pos='H', fig.cap=fig$cap("Growth of spinach leaves1", "A plot of the leaf lengths of two populations of spinach.")}
 RcticChR <- function(a, k, g, x) {
   0.5+10*(a*exp(-exp(-k*(x-g)))-exp(-exp(-k*(-g))))
 }

@@ -80,5 +80,5 @@ p4 <- qplot(x, value, data = mdf4, geom = "line", color = degree, xlim = c(-5, 5
 grid.arrange(p1+ theme(panel.background = element_rect(fill = 'white', colour = 'white')), p2+ theme(panel.background = element_rect(fill = 'white', colour = 'white')), p3+ theme(panel.background = element_rect(fill = 'white', colour = 'white')), p4+ theme(panel.background = element_rect(fill = 'white', colour = 'white')), nrow = 2)
 
 
-
+lm(Mono1ind1 ~ as.function(psi2)(0, x, m, s)+as.function(psi2)(1, x, m, s)+as.function(psi2)(2, x, m, s)+as.function(psi2)(3, x, m, s))
 
