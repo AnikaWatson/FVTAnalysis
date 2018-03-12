@@ -1,15 +1,20 @@
 ---
-title: "Introduction to Function-Valued Analysis"
+title: "A Practical Guide to Function-Valued Traits"
 author: "Anika Watson"
-date: '2018-01-16'
-runtime: shiny
+date: '2018-03-08'
 output:
-  html_document:
-    code_folding: hide
+  rmarkdown::pdf_document:
+    fig_caption: yes        
+    includes:  
+      in_header: preamble-latex.tex
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r echo=FALSE,warning=FALSE}
+ library(knitr)
+  opts_chunk$set(echo = TRUE,
+                 external=TRUE,
+                 fig.pos='H'
+                 )
 ```
 
 ```{r functions, include=FALSE}
@@ -21,13 +26,18 @@ fig <- local({
         cap=function(refName, text) {
             i <<- i + 1
             ref[[refName]] <<- i
-            paste("Figure ", i, ": ", text, sep="")
+            paste(text)
         },
         ref=function(refName) {
             ref[[refName]]
         })
 })
 ``` 
+
+```{r, include=FALSE}
+library("scales")
+library(shiny)
+```
 
 ```{r, include=FALSE}
 #opsin labels and Lambda_max values for their sensitivity curves
@@ -75,12 +85,12 @@ library(shiny)
 ## Introduction
 ##Throwing out the data with the bathwater. 
 
-Despite our best attempts to conduct thorough studies, many biologists are unwittingly throwing away valuable data on a regular basis. One major cause for this loss is that many biological traits are often described by single measurements when they are, in fact, too complex for such a simple framework. Consider, for instance, that you are comparing two populations of spinach to determine if the leaf sizes differ significantly. An obvious method to conduct this experiment would be to measure the length or area of mature leaves and compare the averages of the two populations with a t-test. This, however, ignores the fact that one population might grow to maturity well before the other does, even if the two populations reach roughly the same size in the end Figure 1. In such a case, the t-test would support a rejection of the null hypothesis when, in fact, the populations did differ significantly, not in the overall amount of growth performed by each leaf, but by the underlying growth curves. Traits of this type that can be described as functions have been termed function-valued traits (Pletcher and Geyer 1999. Treating these traits as functions, rather than single data points, has many statistical advantages including increased power and others, which we will discuss shortly (Stinchcombe et al., 2012; Griswoldet al., 2008). Unfortunately, due to its perceived mathematical sophistication biologists have been hesitant to adopt function-valued methods. The good news is that even relatively simple function-valued analyses can provide valuable insight compared to traditional approaches (Griswold et al., 2008; Baker et al., 2015). This guide aims to serve as an introduction to function-valued trait analysis providing thorough examples including R code to dispel fear of this topic.
+Despite our best attempts to conduct thorough studies, many biologists are unwittingly throwing away valuable data on a regular basis. One major cause for this loss is that many biological traits are often described by single measurements when they are, in fact, too complex for such a simple framework. Consider, for instance, data for the spectrum of light absorbed by an eye (see Figure 1). These spectra are often distilled down to a single number, such as the peak wavelength (the wavelength of light that the eye is best tuned to see) (eg. Thor et al., 2016). This simplification ignores much of the data, and limits our ability to quantify the relationship between light wavelength absorbance, and, for instance, the spectrum of ambient light present. Treating these traits as functions, rather than single data points, has many statistical advantages including increased statistical power and others, which we will discuss shortly (Stinchcombe et al., 2012; Griswoldet al., 2008). Unfortunately, due to its perceived mathematical sophistication biologists have been hesitant to adopt function-valued methods. The good news is that even relatively simple function-valued analyses can provide valuable insight compared to traditional approaches (Griswold et al., 2008; Baker et al., 2015). This guide aims to serve as an introduction to function-valued trait analysis providing thorough examples including R code to dispel fear of this topic.
 
 ```{r, echo=FALSE}
 
 #Let's plot the opsin spcrta as a combinations of Aband1 and Bband1
-curve(Aband1(x, lmax[1]) + Bband1(x, lmax[1]), la, lb, 101, ylab = "", xlab = "", col = "red")
+curve(Aband1(x, lmax[1]) + Bband1(x, lmax[1]), la, lb, 101, col = "red", las=1, ylab="Normalized Absorbance", xlab="Wavelength (nm)")
 par(new=TRUE)
 curve(Aband1(x, lmax[2]) + Bband1(x, lmax[2]), la, lb, 101, ylab = "", xlab = "", col = "blue", axes = FALSE)
 legend(199, 1, legend = opsins, col=c("red", "blue"), lty=1, cex=0.8)
@@ -91,13 +101,13 @@ This approach first appeared in literature as far back as 1989 when Mark Kirkpat
 
 According to a paper by the "Function-valued Traits Working Group," the function-valued perspective receives such praise because it "offers enhanced statistical power, greater ability to detect genetic constraints, and improved understanding of phenotypic and genetic variation in environmentally sensitive traits" compared to traditional multivariate methods (Stinchcombe & Kirkpatrick, 2012). These advantages come from the fact that fitting a function to data takes into account the ordering and spacing of the data where multivariable methods ignore this information (Griswold et al., 2008), and because fitting a curve to data smooths noise, reducing its effects on analysis (Stinchcombe et al., 2012). Another advantage of function-valued analysis is that it does not care which points the researcher selected to sample their data. One can just as easily fit a curve estimating the growth of a plant if its height is measured on odd days, as if its height were to be measured on even days. This allows for comparison between data sets with different numbers of samples, and whose samples were taken at different points.
 
-Despite these clear advantages, and Hill's prediction, function-valued trait analysis still hasn't taken off. A quick online search for "function-valued traits" returns 7 results between 1990 and 2000, 236 results between 2000 and 2010, and 370 since 2010 (2010-March 2018). Far from holding a monopoly over the thousands of evolutionary biology, papers published each year. The "Function-valued Traits Working Group," listed two major limitations in 2012 that have yet to be thoroughly addressed. Firstly, the cost of additional measurements required to estimate functions presents a challenge, and secondly a general unfamiliarity with function-valued analyses is limiting its uptake by scientists (Stinchcombe & Kirkpatrick, 2012). As a step towards solving the second challenge, this guide aims to serve as an introduction to function-valued traits, and function-valued trait analysis. This resource is designed for biology students with some experience in R and a basic understanding of statistics. We begin by diving headlong into examples and sorting through the theory as we go. At the end of this text there are recommended activities and example problems so that readers can acquaint themselves more fully with function-valued traits. 
+Despite these clear advantages, and Hill's prediction, function-valued trait analysis still hasn't taken off. A quick online search for "function-valued traits" returns 7 results between 1990 and 2000, 236 results between 2000 and 2010, and 370 since 2010 (2010-March 2018). Far from holding a monopoly over the thousands of evolutionary biology, papers published each year. The "Function-valued Traits Working Group," listed two major limitations in 2012 that have yet to be thoroughly addressed. Firstly, the cost of additional measurements required to estimate functions presents a challenge, and secondly a general unfamiliarity with function-valued analyses is limiting its uptake by scientists (Stinchcombe & Kirkpatrick, 2012). As a step towards solving the second challenge, this guide aims to serve as an introduction to function-valued traits, and function-valued trait analysis. This resource is designed for biologists with some experience in R and a basic understanding of statistics. We begin by diving headlong into examples and sorting through the theory as we go. At the end of this text there are recommended activities and example problems so that readers can acquaint themselves more fully with function-valued traits. 
 
 ## Examples
 
 ### Fitting a Function to Data
 
-If you've ever hit "add trendline" and "display equation on chart" in excel then you've already done this... sort of. Here we will explore how to fit a function to data in R.
+If you've ever hit "add trendline" and "display equation on chart" in excel then you've already done this... sort of. Figure 2 shows data from a lab in a first year biology course in which students measure the volume of CO~2~ produced through yeast metabolism, and use this data to calculate the rate of metabolism. This is, at its foundation, the very simplest example of function-valued analysis.
 
 
 ```{r, echo=FALSE, fig.cap=fig$cap("Yeast Metabolism", "A plot of synthetic data representing the volume of CO~2~ produced over time. Error bars represent standard error from three trials.")}
@@ -105,31 +115,39 @@ RcticG <- function(a, k, g, x) {
   0.75+10*(a*exp(-exp(-k*(x-g)))-exp(-exp(-k*(-g))))
 }
 Time <- seq(from = 1, to = 20, by = 1)
-inp <- seq(from = 0.5, to = 10, by = 0.5)
+inp <- seq(from = 1, to = 20, by = 1)
 a1 <- 1
-k1 <- 1
-g1 <- 5
+k1 <- 0.31
+g1 <- 10
 Length <- data.frame(matrix(NA, nrow=1, ncol=20))
 Mono1akg <- data.frame(matrix(NA, nrow=100, ncol=3))
 set.seed(1235)
 MonoError <- rnorm(n=20, mean=0, sd=0.4) #measurement error
 for (l in 1:20){
-  Length[1,l] <- RcticG(a1, k1, g1, (l/2)) + MonoError[l]
+  Length[1,l] <- RcticG(a1, k1, g1, (l)) + MonoError[l]
 }
-a2 <- 0.9
-k2 <- 0.75
+a2 <- 1.2
+k2 <- 0.19
 g2 <- 1
 RcticG2 <- data.frame(matrix(NA, nrow=1, ncol=20))
 Mono2akg <- data.frame(matrix(NA, nrow=100, ncol=3))
 set.seed(1234)
 MonoError <- rnorm(n=20, mean=0, sd=0.24) #measurement error
 for (l in 1:20){
-  RcticG2[1,l] <- RcticG(a2, k2, g2, (l/2)) + MonoError[l]
+  RcticG2[1,l] <- RcticG(a2, k2, g2, (l)) + MonoError[l]
 }
 
 serr <- as.vector(c(0.55, 0.575, 0.6, 0.625, 0.65, 0.7, 0.75, 0.7275, 0.705, 0.3775, 0.05, 0.325, 0.6, 0.7, 0.8, 0.75, 0.76, 0.6, 0.78, 0.8))
 
 serr2 <- as.vector(c(0.6, 0.570412415, 0.340824829, 0.390824829, 0.240824829, 0.390824829, 0.240824829, 0.390824829, 0.240824829, 0.470412415, 0.4, 0.470412415, 0.240824829, 0.411237244, 0.281649658, 0.472474487, 0.363299316, 0.554124145, 0.644948974))
+
+YeastModel1 <- lm(as.numeric(as.vector(Length[1,])) ~ poly(x = Time, n = 1))
+
+predicted.intervals1 <- predict(YeastModel1, data.frame(x=Time), interval='confidence', level=0.99)
+
+YeastModel2 <- lm(as.numeric(as.vector(RcticG2[1,])) ~ poly(x = Time, n = 1))
+
+predicted.intervals2 <- predict(YeastModel2, data.frame(x=Time), interval='confidence', level=0.99)
 
 plot(y = Length, x = Time, ylim = c(0, 12), xlim = c(0, 20), ylab = expression('Volume CO'[2]* ' (mL)'), xlab = "Time (min)", las = 1)
 points(y = RcticG2, x = Time, pch = 16, col = 3)
@@ -138,12 +156,19 @@ arrows(Time, as.numeric(as.vector(Length[1,]))-serr, Time, as.numeric(as.vector(
 
 arrows(Time, as.numeric(as.vector(RcticG2[1,]))-serr2, Time, as.numeric(as.vector(RcticG2[1,]))+serr2, length=0.05, angle=90, code=3)
 
+lines(inp,predicted.intervals1[,1],col='black', lwd=1, xlim=c(0,10))
+
+lines(inp,predicted.intervals2[,1],col='black', lwd=1, xlim=c(0,10))
+
 legend("bottomright",c("Quick-Rise Yeast", "Traditional Yeast"), 
        col = c(3, "black"), pch = c(16, 1))
 ```
 
 
-First, we need data. I have created a sample dataset comprised of the lengths of the mythical species of fish, R-ctic Grayling. This dataset has both random individual variance, and random measurement error, and details about how the data was generated have been outlined in the *Data Generation* document. Here is a plot of the data:
+It is clear from the graph, however, that these stright lines of bestfit do not represent the data very well, but without knowledge of the underlying function (is the growth exponential? logarithmic?), we may not want to guess at a better function to fit. Fortunately we don't have to. Here I will introduce a non-parametric method of function-valued traits that does not assume any particular function.
+
+In order to do so, I have created a sample dataset comprised of the lengths of the mythical species of fish, R-ctic Grayling. This dataset has both random individual variance, and random measurement error, and details about how the data was generated have been outlined in the *Data Generation* document. Here is a plot of the data:
+
 
 ```{r Grayling, include=FALSE}
 RcticG <- function(a, k, g, x) {
@@ -174,7 +199,7 @@ for (i in 1:10) {
 
 cols <- c("#000000", 2, 3, 4, 5, 6, 7, 8, "#882255", "darkolivegreen2")
 
-matplot(y = t(RcticG1), type = 'p', lty = 1, pch = 16, main = NULL, ylab = "Length (cm)", xlab = "Age (weeks)", las = 1, col = alpha(cols, 0.5))
+matplot(y = t(RcticG1), type = 'p', lty = 1, pch = 16, main = NULL, ylab = "Length (feet)", xlab = "Age (weeks)", las = 1, col = alpha(cols, 0.5))
 ```
 
 Now that we have data we can fit various models to them. Let's begin by fitting a series of polynomials to the data in a process called polynmial regression. For simplicity, we will focus on one individual, from one population of R-ctic Grayling. Let's take the first individual from the first population, `RcticG1ind1`.
@@ -188,7 +213,7 @@ for (i in 1:20) {
 
 ```{r, echo = FALSE, fig.cap=fig$cap("RcticG1ind1", "A plot of the true and measured length of `RcticG1ind1`.")}
 xvalues <- seq(from = 0.5, to = 10, by = 0.5) #This object will come up often so take 
-plot(y = RcticG1ind1, x = xvalues, main = NULL, ylab = "Length (cm)", xlab = "Age (weeks)", las = 1)
+plot(y = RcticG1ind1, x = xvalues, main = NULL, ylab = "Length (feet)", xlab = "Age (weeks)", las = 1)
 curve(RcticG(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
 legend("bottomright",c("Measured Length", "True Length"), 
        col = c("black", "red"), pch = c(1, NA), lwd = c(NA, 1), lty = c(1, 1))
@@ -217,7 +242,7 @@ Now that we have a model we can plot it against the data to see how it holds up.
 First let's plot the data.
 
 ```{r, eval=FALSE}
-plot.new(y = RcticG1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (cm)", xlab = "Age (weeks)", las = 1)
+plot.new(y = RcticG1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (feet)", xlab = "Age (weeks)", las = 1)
 ```
 
 Then add the secret function of the true length of RcticG1ind1 used to generate the data.
@@ -242,37 +267,29 @@ legend("bottomright",c("Measured Length", "True Length", "Predicted Length", "99
 ```
 
 ```{r, echo=FALSE, fig.cap=fig$cap("R-ctic Grayling 1", "The polynomial fit as compares to the real function and the measured data.")}
-plot(y = RcticG1ind1, x = xvalues, main = NULL, ylab = "Length (cm)", xlab = "Age (weeks)", las = 1)
+plot(y = RcticG1ind1, x = xvalues, main = NULL, ylab = "Length (feet)", xlab = "Age (weeks)", las = 1)
 curve(RcticG(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
 lines(inp,predicted.intervals[,1],col='green', lwd=3)
 lines(inp,predicted.intervals[,2],col=4, lwd=1, lty=2)
 lines(inp,predicted.intervals[,3],col=4, lwd=1, lty=2)
 legend("bottomright",c("Measured Length", "True Length", "Predicted Length", "99% Confidence Intervals"), 
        col = c("black", "red", "green", 4), pch = c(1, NA, NA, NA), lwd = c(NA, 1, 3, 1), lty = c(1, 1, 1, 2))
-
-
 ```
 
-This green line seems like a reasonable fit. But what if we hadn't chosen n=6? How did that arbitrary decision impact the model? Slide the toggle below to see for yourself.
+This green line seems like a reasonable fit. But what if we hadn't chosen n = 6? How did that arbitrary decision impact the model? Let's take it to the max, n = 19, and see what happens.
 
-```{r, echo=FALSE}
-sliderInput("numb", label = "Polynomial Degree", min = 1, max = 19, value = 6, step = 1, animate = T)
-```
+```{r, echo=FALSE, fig.cap=fig$cap("R-ctic Ch-R 1", "A plot demonstrating the shape of the polynimial fit when the number of terms in the approximating polynomial equals the number of data points.")}
 
-
-```{r, echo=FALSE, fig.cap=fig$cap("R-ctic Grayling 1", "An interactive plot demonstrating the change in shape of the polynimial fit as the number of terms in the approximating polynomial is adjusted.")}
-
-renderPlot({
-  PolyModelPop1ind1 <- lm(RcticG1ind1 ~ poly(x = inp, n = input$numb))
-  predicted.intervals <- predict(PolyModelPop1ind1, data.frame(x=inp), interval='confidence', level=0.99)
+PolyModelPop1ind1 <- lm(RcticG1ind1 ~ poly(x = inp, n = 19))
+predicted.intervals <- predict(PolyModelPop1ind1, data.frame(x=inp), interval='confidence', level=0.99)
   
-  plot(y = RcticG1ind1, x = xvalues, main = NULL, ylab = "Length (cm)", xlab = "Age (weeks)", las = 1)
+  plot(y = RcticG1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (cm)", xlab = "Age (weeks)", las = 1)
   curve(RcticG(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
   lines(inp,predicted.intervals[,1],col='green', lwd=3)
   lines(inp,predicted.intervals[,2],col=4, lwd=1, lty=2)
   lines(inp,predicted.intervals[,3],col=4, lwd=1, lty=2)
   legend("bottomright",c("Measured Length", "True Length", "Predicted Length", "99% Confidence Intervals"), col = c("black", "red", "green", 4), pch = c(1, NA, NA, NA), lwd = c(NA, 1, 3, 1), lty = c(1, 1, 1, 2))
-})
+
 
 ```
 
@@ -397,7 +414,7 @@ HotellingsT2(PolyModel1, PolyModel2)
 According to this result we have failed to reject the null hypothesis that the sizes of female and male populations of R-ctic Grayling differ significantly. Before we conclude let us plot these two samples together to see whether or not this is a reasonable outocome.
 
 ```{r, fig.cap=fig$cap("Male vs. Female", "A comparison of male and female R-ctic Grayling lengths")}
-matplot(y = t(RcticG1), type = 'p', lty = 1, pch = 10, ylab = "Length (cm)", xlab = "Age (weeks)", las = 1, col = 1, ylim = c(0, 2.5))
+matplot(y = t(RcticG1), type = 'p', lty = 1, pch = 10, ylab = "Length (feet)", xlab = "Age (weeks)", las = 1, col = 1, ylim = c(0, 2.5))
 matplot(y = t(RcticG2), type = 'p', lty = 1, pch = 1, las = 1, col = 2, add = TRUE)
 legend("bottomright",c("Males", "Females"), col = c("black", "red"), pch = c(10, 1))
 ```
@@ -406,7 +423,7 @@ There is a significant amount of overlap between these measurements of males and
 
 ### Fitting a Sinusoidal Function to Data (still in the works)
 
-Okay so we fit a polynomial to the data, but is that really the best fit? In e]Excel the user can choose from a selection of fits to suit their data. Let's not be outdone by a comouter program! Here we will go beyond the capabilities of Excel and fit a sinusoidal model to the data.
+Okay so we fit a polynomial to the data, but is that really the best fit? In Excel the user can choose from a selection of fits to suit their data. Let's not be outdone by a comouter program! Here we will go beyond the capabilities of Excel and fit a sinusoidal model to the data.
 
 To begin, we can use the function `spectrum` to get the spectral density of `RcticG1ind1`.
 
@@ -435,7 +452,7 @@ PredictedIntervalsSin <- predict(SinModelPop1ind1, data.frame(x = xvalues),inter
 Now we're ready to plot our model. We can start by plotting the data and true function as before.
 
 ```{r, tidy=TRUE, eval=FALSE}
-plot(y = RcticG1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (cm)", xlab = "Age (weeks)", las = 1)
+plot(y = RcticG1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (feet)", xlab = "Age (weeks)", las = 1)
 curve(RcticG(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
 ```
 
@@ -453,7 +470,7 @@ legend("bottomright",c("Measured Length", "True length", "Predicted length", "99
 ```
 
 ```{r, echo=FALSE, fig.cap=fig$cap("Growth of spinach leaves1", "Cosine decomposition")}
-plot(y = RcticG1ind1, x = xvalues, main = NULL, ylab = "Length (cm)", xlab = "Age (weeks)", las = 1)
+plot(y = RcticG1ind1, x = xvalues, main = NULL, ylab = "Length (feet)", xlab = "Age (weeks)", las = 1)
 curve(RcticG(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
 lines(fitted(SinModelPop1ind1)~xvalues, col='green', lwd=3)
 lines(xvalues, PredictedIntervalsSin[,2],col=4, lwd=1, lty=2)
@@ -473,7 +490,7 @@ PredictedIntervalsSin2 <- predict(SinModel2Pop1ind1, data.frame(x = xvalues),int
 Now let's plot this and see how our approximation improves.
 
 ```{r}
-plot(y = RcticG1ind1, x = xvalues, main = NULL, ylab = "Length (cm)", xlab = "Age (weeks)", las = 1)
+plot(y = RcticG1ind1, x = xvalues, main = NULL, ylab = "Length (feet)", xlab = "Age (weeks)", las = 1)
 curve(RcticG(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
 lines(fitted(SinModelPop1ind1)~xvalues, col="black", lwd=1)
 lines(fitted(SinModel2Pop1ind1)~xvalues, col='green', lwd=3)

@@ -1,0 +1,10 @@
+name: keystonedraft
+title:
+username:
+account: fvt-analysis
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 297570
+bundleId: 1263571
+url: https://fvt-analysis.shinyapps.io/keystonedraft/
+when: 1520805359.21756
