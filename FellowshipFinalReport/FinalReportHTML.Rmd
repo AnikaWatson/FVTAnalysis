@@ -162,7 +162,7 @@ In order to clearly illustrate this method, we have created a sample dataset com
 
 ```{r Grayling, include=FALSE}
 RcticG <- function(a, k, g, x) {
-  0.5+(a*exp(-exp(-k*(x-g)))-exp(-exp(-k*(-g))))
+  0.05+0.4*(a*exp(-exp(-k*(x-g)))-exp(-exp(-k*(-g))))
 }
 inp <- seq(from = 0.5, to = 10, by = 0.5)
 a1 <- 1
@@ -172,7 +172,7 @@ RcticG1 <- data.frame(matrix(NA, nrow=10, ncol=20))
 Mono1akg <- data.frame(matrix(NA, nrow=100, ncol=3))
 for (i in 1:10) {
   set.seed(1234*i)
-  MonoError <- rnorm(n=20, mean=0, sd=0.04) #measurement error
+  MonoError <- rnorm(n=20, mean=0, sd=0.02) #measurement error
   IndiDev <- rnorm(n=3, mean=0, sd=0.2) #the individual's deviation from the pop. av.
   for (l in 1:20){
     RcticG1[i,l] <- RcticG((a1+IndiDev[1]), (k1+IndiDev[2]), (g1+IndiDev[3]), (l/2)) + MonoError[l]
@@ -189,7 +189,17 @@ for (i in 1:10) {
 
 cols <- c("#000000", 2, 3, 4, 5, 6, 7, 8, "#882255", "darkolivegreen2")
 
-matplot(y = t(RcticG1), type = 'p', lty = 1, pch = 16, main = NULL, ylab = "Length (feet)", xlab = "Age (weeks)", las = 1, col = alpha(cols, 0.5))
+matplot(y = t(RcticG1), type = 'p', lty = 1, pch = 16, main = NULL, ylab = "Length (m)", xlab = "Age (weeks)", las = 1, col = alpha(cols, 0.5))
+curve(RcticG(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "black", xlim = c(0, 20))
+curve(RcticG(Mono1akg[2,1], Mono1akg[2,2], Mono1akg[2,3], x), n = 101, add = TRUE, col = "black", xlim = c(0, 20))
+curve(RcticG(Mono1akg[3,1], Mono1akg[3,2], Mono1akg[3,3], x), n = 101, add = TRUE, col = "black", xlim = c(0, 20))
+curve(RcticG(Mono1akg[4,1], Mono1akg[4,2], Mono1akg[4,3], x), n = 101, add = TRUE, col = "black", xlim = c(0, 20))
+curve(RcticG(Mono1akg[5,1], Mono1akg[5,2], Mono1akg[5,3], x), n = 101, add = TRUE, col = "black", xlim = c(0, 20))
+curve(RcticG(Mono1akg[6,1], Mono1akg[6,2], Mono1akg[6,3], x), n = 101, add = TRUE, col = "black", xlim = c(0, 20))
+curve(RcticG(Mono1akg[7,1], Mono1akg[7,2], Mono1akg[7,3], x), n = 101, add = TRUE, col = "black", xlim = c(0, 20))
+curve(RcticG(Mono1akg[8,1], Mono1akg[8,2], Mono1akg[8,3], x), n = 101, add = TRUE, col = "black", xlim = c(0, 20))
+curve(RcticG(Mono1akg[9,1], Mono1akg[9,2], Mono1akg[9,3], x), n = 101, add = TRUE, col = "black", xlim = c(0, 20))
+curve(RcticG(Mono1akg[10,1], Mono1akg[10,2], Mono1akg[10,3], x), n = 101, add = TRUE, col = "black", xlim = c(0, 20))
 ```
 
 Now that we have data we can fit various models to them. Let's begin by fitting a series of polynomials to the data in a process called polynmial regression. For simplicity, we will begin by focusing on one individual, then we will scale up to one population, and finally, we will compare two populations of R-ctic Grayling. 
@@ -205,8 +215,8 @@ for (i in 1:20) {
 
 ```{r, echo = FALSE, fig.cap=fig$cap("RcticG1ind1", "A plot of the true and measured length of `RcticG1ind1`.")}
 xvalues <- seq(from = 0.5, to = 10, by = 0.5) #This object will come up often so take 
-plot(y = RcticG1ind1, x = xvalues, main = NULL, ylab = "Length (feet)", xlab = "Age (weeks)", las = 1)
-curve(RcticG(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
+plot(y = RcticG1ind1, x = xvalues, main = NULL, ylab = "Length (m)", xlab = "Age (weeks)", las = 1)
+curve(RcticG(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "black")
 legend("bottomright",c("Measured Length", "True Length"), 
        col = c("black", "red"), pch = c(1, NA), lwd = c(NA, 1), lty = c(1, 1))
 
@@ -236,7 +246,7 @@ Thus, it is important to plot the data (Figure 5).
 
 ```{r, eval=FALSE}
 #Start by plotting the data that the scientists cathered in the field.
-plot.new(y = RcticG1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (feet)", xlab = "Age (weeks)", las = 1)
+plot.new(y = RcticG1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (m)", xlab = "Age (weeks)", las = 1)
 
 #Then add the function of the true length of RcticG1ind1 that was used to generate the data.
 curve(RcticG(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
@@ -256,7 +266,7 @@ legend("bottomright",c("Measured Length", "True Length", "Predicted Length", "99
 ```
 
 ```{r, echo=FALSE, fig.cap=fig$cap("R-ctic Grayling 1", "The polynomial fit as compares to the real function and the measured data.")}
-plot(y = RcticG1ind1, x = xvalues, main = NULL, ylab = "Length (feet)", xlab = "Age (weeks)", las = 1)
+plot(y = RcticG1ind1, x = xvalues, main = NULL, ylab = "Length (m)", xlab = "Age (weeks)", las = 1)
 curve(RcticG(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
 lines(inp,predicted.intervals[,1],col='green', lwd=3)
 lines(inp,predicted.intervals[,2],col=4, lwd=1, lty=2)
@@ -280,7 +290,7 @@ renderPlot({
   PolyModelPop1ind1 <- lm(RcticG1ind1 ~ poly(x = inp, n = input$numb))
   predicted.intervals <- predict(PolyModelPop1ind1, data.frame(x=inp), interval='confidence', level=0.99)
   
-  plot(y = RcticG1ind1, x = xvalues, main = NULL, ylab = "Length (feet)", xlab = "Age (weeks)", las = 1)
+  plot(y = RcticG1ind1, x = xvalues, main = NULL, ylab = "Length (m)", xlab = "Age (weeks)", las = 1)
   curve(RcticG(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
   lines(inp,predicted.intervals[,1],col='green', lwd=3)
   lines(inp,predicted.intervals[,2],col=4, lwd=1, lty=2)
@@ -302,10 +312,10 @@ PolyModelPop1ind1
 ```
 
 Evaluating `PolyModelPop1ind1` we see that it is composed of seven `Coefficients`.
-Under the hood, R is adding together functions we told it to combine, namely, a costant, x, x^2^, x^3^, etc. up to x^6^. These `Coeffficients` correspond to the amplitudes of the functions making up the green curve shown in the figures above. In other words they tell us how much of each function is being added. Figure 8 is a visualization of the functions present when n = 6.
+Under the hood, R is adding together functions we told it to combine, namely, a costant, x, x^2^, x^3^, etc. up to x^6^. These `Coeffficients` correspond to the amplitudes of the functions making up the green curve shown in the figures above. In other words they tell us how much of each function is being added. Figure 7 is a visualization of the functions present when n = 6.
 
 ```{r, echo=FALSE, fig.cap=fig$cap("Coefficients", "A plot of the functions making up the polynomial approximation of `RcticG1ind1`'s growth function.")}
-plot(1, type="n", xlab="", ylab="", xlim = c(0, 10), ylim = c(-50, 100))
+plot(1, type="n", xlim = c(0, 10), ylim = c(-50, 100), las = 1, ylab = "Length (m)", xlab = "Age (weeks)")
 curve(1.63443*x, xlim = c(-1, 11), ylim = c(-55, 55), add = TRUE, col = 1)
 curve(-0.58209*x^2, to = 10, xlim = c(-1, 11), ylim = c(-55, 55), add = TRUE, col = 2)
 curve(-0.07315*x^3, to = 10, xlim = c(-1, 11), ylim = c(-55, 55), add = TRUE, col = 3)
@@ -419,13 +429,13 @@ According to this result, with a p-value of 0.5888 we have failed to reject the 
 
 Before we accept this result, let us plot these two samples together to see whether or not this is a reasonable outocome Figure 9.
 
-```{r, fig.cap=fig$cap("Male vs. Female", "A comparison of male and female R-ctic Grayling lengths")}
-matplot(y = t(RcticG1), type = 'p', lty = 1, pch = 10, ylab = "Length (feet)", xlab = "Age (weeks)", las = 1, col = 1, ylim = c(0, 2.5))
+```{r, fig.cap=fig$cap("Fluvial vs. Adfluial", "A comparison of male and female R-ctic Grayling lengths")}
+matplot(y = t(RcticG1), type = 'p', lty = 1, pch = 10, ylab = "Length (m)", xlab = "Age (weeks)", las = 1, col = 1, ylim = c(0, 0.9))
 matplot(y = t(RcticG2), type = 'p', lty = 1, pch = 1, las = 1, col = 2, add = TRUE)
-legend("bottomright",c("Males", "Females"), col = c("black", "red"), pch = c(10, 1))
+legend("bottomright",c("Fluvial", "Adfluvial"), col = c("black", "red"), pch = c(10, 1))
 ```
 
-There is a significant amount of overlap between these measurements of males and females which supports our calculation that we cannot reject the null hypothesis.
+There is a significant amount of overlap between these measurements of fluvial and adfluvial which supports our calculation that we cannot reject the null hypothesis.
 
 #### Fitting a Sinusoidal Function to Data
 
@@ -447,7 +457,7 @@ period <- 1/spctrm$freq[spctrm$spec==max(spctrm$spec)]
 
 #Now we're ready to make a model. 
 #Even though we are now even further from our classical "linear" model than we were with the polynomial approximation, we are going to use the linear model function once again.
-#Here, again we are inputting our y-values (RcticG1ind1), but this time we also have to specify the basis function.
+#Here, again we are inputting our y-values (RcticG1ind1), but this time we also have to specify the basis function by hand.
 SinModelPop1ind1 <- lm(RcticG1ind1 ~ sin(2*pi/period*xvalues)+cos(2*pi/period*xvalues))
 
 #If you find the mathematics of this basis function daunting, go to: https://www.desmos.com/calculator and copy this into the input window, adjusting the period, and changing between sin and cos as you see fit: \sin\left(\frac{\left(2\cdot\pi\right)}{period}\cdot x\right)
@@ -460,7 +470,7 @@ PredictedIntervalsSin <- predict(SinModelPop1ind1, data.frame(x = xvalues),inter
 ```{r, tidy=TRUE, eval=FALSE}
 #Now we're ready to plot our model. 
 #Once again, we can start by plotting the data and true function as before.
-plot(y = RcticG1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (feet)", xlab = "Age (weeks)", las = 1)
+plot(y = RcticG1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (m)", xlab = "Age (weeks)", las = 1)
 #Then add the true underlying function.
 curve(RcticG(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
 
@@ -477,7 +487,7 @@ legend("bottomright",c("Measured Length", "True length", "Predicted length", "99
 ```
 
 ```{r, echo=FALSE, fig.cap=fig$cap("Growth of spinach leaves1", "Cosine decomposition")}
-plot(y = RcticG1ind1, x = xvalues, main = NULL, ylab = "Length (feet)", xlab = "Age (weeks)", las = 1)
+plot(y = RcticG1ind1, x = xvalues, main = NULL, ylab = "Length (m)", xlab = "Age (weeks)", las = 1)
 curve(RcticG(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
 lines(fitted(SinModelPop1ind1)~xvalues, col='green', lwd=3)
 lines(xvalues, PredictedIntervalsSin[,2],col=4, lwd=1, lty=2)
@@ -499,7 +509,7 @@ PredictedIntervalsSin2 <- predict(SinModel2Pop1ind1, data.frame(x = xvalues),int
 
 #Now let's plot this and see how our approximation improves.
 #Start with the data.
-plot(y = RcticG1ind1, x = xvalues, main = NULL, ylab = "Length (feet)", xlab = "Age (weeks)", las = 1)
+plot(y = RcticG1ind1, x = xvalues, main = NULL, ylab = "Length (m)", xlab = "Age (weeks)", las = 1)
 #Add the true curve.
 curve(RcticG(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "red")
 #Add the old approximation for comparison.
@@ -551,6 +561,29 @@ Despite these clear advantages, and Hill's prediction, function-valued trait ana
 ##Going Further
 ###"Okay so What Now?"
 In this paper, we have focused on one type of function-valued analysis, a non-parametric approach (meaning we did not assume the underlying function dictating the data) of fitting a basis function to data. We chose this approach because Griswold et al. showed that even when the correct underlying function was known, a parametric analysis fitting the curve that was used to produce the data to the data did not always have better power than the non-parametric approach (Griswold et al., 2008). Other methods include a parametric approach, which involves assuming an underlying function and estimating the parameters of that function (Hernandez et al., 2015). For example, one might assume that data fits a Gaussian function and take the mean and standard deviation as parameters (here "standard deviation" refers to the width of the bell approximating the data, not the standard deviation of the data). These parameters can then be compared to each other as data, just as the coefficients of basis functions can be compared in non-parametric function-valued analysis. The curious reader is encouraged to consult the list of references to further explore function-valued traits. This field holds many new techniques to be developed, fine-tuned, and implemented so dive in and be part of this wave of innovation.
+
+##Works Cited
+
+Baker, R. L., Leong, W. F., Brock, M. T., Markelz, R. J. C., Covington, M. F., Devisetty, U. K., … Weinig, C. (2015). Modeling development and quantitative trait mapping reveal independent genetic modules for leaf size and shape. The New Phytologist, 208(1), 257–268. https://doi.org/10.1111/nph.13509
+
+Griswold, C. K., Gomulkiewicz, R., & Heckman, N. (2008). Hypothesis Testing in Comparative and Experimental Studies of Function-Valued Traits. Evolution, 62(5), 1229–1242. https://doi.org/10.1111/j.1558-5646.2008.00340.x
+
+Hernandez, K. M. (2015), Understanding the genetic architecture of complex traits using the function-valued approach. New Phytol, 208: 1–3. doi:10.1111/nph.13607
+
+Kirkpatrick, M., & Lofsvold, D. (1989). The evolution of growth trajectories and other complex quantitative characters. Genome, 31(2), 778–783. https://doi.org/10.1139/g89-137
+
+Pletcher, S. D., & Geyer, C. J. (1999). The Genetic Analysis of Age-Dependent Traits: Modeling the Character Process. Genetics, 153(2), 825–835.
+
+Stinchcombe, J. R. et al., (2012). Genetics and evolution of function-valued traits: understanding environmentally responsive phenotypes. Trends in Ecology & Evolution, 27(11), 637–647. https://doi.org/10.1016/j.tree.2012.07.002
+
+Veen, T., Brock, C., Rennison, D., & Bolnick, D. (2017). Plasticity contributes to a fine-scale depth gradient in sticklebacks’ visual system. Molecular Ecology, 26(16), 4339–4350. https://doi.org/10.1111/mec.14193
+
+
+
+
+
+
+
 
 
 
