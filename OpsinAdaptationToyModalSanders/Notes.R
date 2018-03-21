@@ -74,3 +74,82 @@ psi2 <- function(n, x, m, s) {
 
 #bump hunting
 fit <- lm(sWavelength[,2] ~ dnorm(x = xVals, mean = i))
+
+
+-----## Fourier ## ------
+plot(inp, fft(RcticG1ind1))
+
+plot(inp, fft(fft(RcticG1ind1, 20)))
+plot(inp, RcticG1ind1)
+
+Fourier <- fft(RcticG1ind1, 20)
+
+Mag <- Mod(Fourier)
+
+x.axis <- 1:length(Mag)/0.5
+
+plot(x=x.axis, y=Mag)
+
+plot(inp, Fourier)
+
+for (i in 1:20) {
+  Add <- c(FALSE, rep(TRUE, 19))
+  curve((Re(Fourier[i])*cos(x)-Im(Fourier[i])*sin(x))*(Re(Fourier[i])*cos(x)+Im(Fourier[i])*sin(x)), add = Add[i], xlim = c(0, 100), ylim = c(-5, 40), col = i)
+}
+
+for (i in 1:20) {
+  Add <- c(FALSE, rep(TRUE, 19))
+  curve((Re(Fourier[i])*cos((i-1)*((0.5)/20)*x)), add = Add[i], xlim = c(0, 10), ylim = c(-10, 10), col = i)
+}
+
+fourier <- function(z, x) {
+  for (i in 1:length(z)){
+    temp[i] <- z[i]*cos((i-1)*((0.5)/20)*x)
+  }
+  sum(temp)
+}
+
+curve(fourier(Fourier, x), from = 0, to = 20, ylab = "")
+
+curve(Re(Fourier[1])+Re(Fourier[2])*cos((1)*((0.5)/20)*x)+Re(Fourier[3])*cos((2)*((0.5)/20)*x)+Re(Fourier[4])*cos((3)*((0.5)/20)*x)+Re(Fourier[5])*cos((4)*((0.5)/20)*x)+Re(Fourier[6])*cos((5)*((0.5)/20)*x)+Re(Fourier[7])*cos((6)*((0.5)/20)*x)+Re(Fourier[8])*cos((7)*((0.5)/20)*x)+Re(Fourier[9])*cos((8)*((0.5)/20)*x)+Re(Fourier[10])*cos((9)*((0.5)/20)*x)+Re(Fourier[11])*cos((10)*((0.5)/20)*x)+Re(Fourier[12])*cos((11)*((0.5)/20)*x)+Re(Fourier[13])*cos((12)*((0.5)/20)*x)+Re(Fourier[14])*cos((13)*((0.5)/20)*x)+Re(Fourier[15])*cos((14)*((0.5)/20)*x)+Re(Fourier[16])*cos((15)*((0.5)/20)*x)+Re(Fourier[17])*cos((16)*((0.5)/20)*x)+Re(Fourier[18])*cos((17)*((0.5)/20)*x)+Re(Fourier[19])*cos((18)*((0.5)/20)*x)+Re(Fourier[20])*cos((19)*((0.5)/20)*x),
+      from = 0, to = 20, ylab = "")
+
+curve(Re(Fourier[1])+Re(Fourier[2])*cos((1)*2*pi*(5/100)*x)+Re(Fourier[3])*cos((2)*(2*pi**(5/100))*x)+Re(Fourier[4])*cos((3)*(2*pi**(5/100))*x)+Re(Fourier[5])*cos((4)*(2*pi**(5/100))*x)+Re(Fourier[6])*cos((5)*(2*pi**(5/100))*x)+Re(Fourier[7])*cos((6)*(2*pi**(5/100))*x)+Re(Fourier[8])*cos((7)*(2*pi**(5/100))*x)+Re(Fourier[9])*cos((8)*(2*pi**(5/100))*x)+Re(Fourier[10])*cos((9)*(2*pi**(5/100))*x)+Im(Fourier[2])*sin((1)*(2*pi**(5/100))*x)+Im(Fourier[3])*sin((2)*(2*pi**(5/100))*x)+Im(Fourier[4])*sin((3)*(2*pi**(5/100))*x)+Im(Fourier[5])*sin((4)*(2*pi**(5/100))*x)+Im(Fourier[6])*sin((5)*(2*pi**(5/100))*x)+Im(Fourier[7])*sin((6)*(2*pi**(5/100))*x)+Im(Fourier[8])*sin((7)*(2*pi**(5/100))*x)+Im(Fourier[9])*sin((8)*(2*pi**(5/100))*x)+Im(Fourier[10])*sin((9)*(2*pi**(5/100))*x),
+      from = 0, to = 20, ylab = "")
+
+curve(Re(Fourier[2])*cos((1)*(2*pi**(5/100))*x))
+
+curve(Im(Fourier[10])*sin((9)*(2*pi**(5/100))*x))
+
+spectrum(RcticG1ind1)
+
+convert.fft <- function(cs, sample.rate=1) {
+  cs <- cs / length(cs) # normalize
+  
+  distance.center <- function(c)signif( Mod(c),        4)
+  angle           <- function(c)signif( 180*Arg(c)/pi, 3)
+  
+  df <- data.frame(cycle    = 0:(length(cs)-1),
+                   freq     = 0:(length(cs)-1) * sample.rate / length(cs),
+                   strength = sapply(cs, distance.center),
+                   delay    = sapply(cs, angle))
+  df
+}
+
+convert.fft(fft(RcticG1ind1, 20))
+
+
+for (i in 1:20) {
+  Add <- c(FALSE, rep(TRUE, 19))
+  curve((Im(Fourier[i])*sin(x)), add = Add[i], xlim = c(0, 10), ylim = c(-2, 2), col = i)
+}
+
+periodogram(RcticG1ind1)
+
+curve(sum((Re(Fourier)))*sin(x), add = FALSE, xlim = c(0, 10), ylim = c(-200, 200))
+
+curve(sum((Re(Fourier))*(rep(sin(x), 20))), add = FALSE, xlim = c(0, 20), ylim = c(-2, 2))
+
+curve(sum((Im(Fourier)))*sin(x), add = FALSE, xlim = c(0, 20), ylim = c(-2, 2))
+
+plot((Re(Fourier)+(i*Im(Fourier)))*Fourier, spectrum)

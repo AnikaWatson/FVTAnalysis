@@ -187,9 +187,9 @@ for (i in 1:10) {
 
 #cols <- c("#000000", "#332288", "#88CCEE", "#44AA99", "#117733", "#999933", "#DDCC77", "#CC6677", "#882255", "#AA4499")
 
-cols <- c("#000000", 2, 3, 4, 5, 6, 7, 8, "#882255", "darkolivegreen2")
+cols <- c(0.5, 0.5, 0.9, 0.7, 0.8, 0.5, 0.1, 0.2, 0.5, 0.5)
 
-matplot(y = t(RcticG1), type = 'p', lty = 1, pch = 16, main = NULL, ylab = "Length (m)", xlab = "Age (weeks)", las = 1, col = alpha(cols, 0.5))
+matplot(y = t(RcticG1), x = inp, type = 'p', lty = 1, pch = 16, main = NULL, ylab = "Length (m)", xlab = "Age (weeks)", las = 1, col = alpha(3, 0.5))
 curve(RcticG(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "black", xlim = c(0, 20))
 curve(RcticG(Mono1akg[2,1], Mono1akg[2,2], Mono1akg[2,3], x), n = 101, add = TRUE, col = "black", xlim = c(0, 20))
 curve(RcticG(Mono1akg[3,1], Mono1akg[3,2], Mono1akg[3,3], x), n = 101, add = TRUE, col = "black", xlim = c(0, 20))
@@ -215,10 +215,10 @@ for (i in 1:20) {
 
 ```{r, echo = FALSE, fig.cap=fig$cap("RcticG1ind1", "A plot of the true and measured length of `RcticG1ind1`.")}
 xvalues <- seq(from = 0.5, to = 10, by = 0.5) #This object will come up often so take 
-plot(y = RcticG1ind1, x = xvalues, main = NULL, ylab = "Length (m)", xlab = "Age (weeks)", las = 1)
+plot(y = RcticG1ind1, x = xvalues, main = NULL, ylab = "Length (m)", xlab = "Age (weeks)", las = 1, col = 3, pch = 19)
 curve(RcticG(Mono1akg[1,1], Mono1akg[1,2], Mono1akg[1,3], x), n = 101, add = TRUE, col = "black")
 legend("bottomright",c("Measured Length", "True Length"), 
-       col = c("black", "red"), pch = c(1, NA), lwd = c(NA, 1), lty = c(1, 1))
+       col = c(3, "black"), pch = c(19, NA), lwd = c(NA, 1), lty = c(1, 1))
 
 ```
 
@@ -316,14 +316,14 @@ Under the hood, R is adding together functions we told it to combine, namely, a 
 
 ```{r, echo=FALSE, fig.cap=fig$cap("Coefficients", "A plot of the functions making up the polynomial approximation of `RcticG1ind1`'s growth function.")}
 plot(1, type="n", xlim = c(0, 10), ylim = c(-50, 100), las = 1, ylab = "Length (m)", xlab = "Age (weeks)")
-curve(1.63443*x, xlim = c(-1, 11), ylim = c(-55, 55), add = TRUE, col = 1)
+curve(1.63443*x, xlim = c(-1, 11), ylim = c(-55, 55), add = TRUE, col = "orange")
 curve(-0.58209*x^2, to = 10, xlim = c(-1, 11), ylim = c(-55, 55), add = TRUE, col = 2)
-curve(-0.07315*x^3, to = 10, xlim = c(-1, 11), ylim = c(-55, 55), add = TRUE, col = 3)
-curve(0.26519*x^4, to = 10, xlim = c(-1, 11), ylim = c(-55, 55), add = TRUE, col = 4)
-curve(-0.02839*x^5, to = 10, xlim = c(-1, 11), ylim = c(-55, 55), add = TRUE, col = 5)
-curve(0.03007*x^6, to = 10, xlim = c(-1, 11), ylim = c(-55, 55), add = TRUE, col = 6)
-abline(h=0.67789,col= "orange")
-legend("topright", c("Constant", "x", as.expression(bquote( ~ x^2 ~ "")), as.expression(bquote( ~ x^3 ~ "")), as.expression(bquote( ~ x^4 ~ "")), as.expression(bquote( ~ x^5 ~ "")), as.expression(bquote( ~ x^6 ~ ""))), col = c("orange", 1, 2, 3, 4, 5, 6), lty = c(1, 1, 1, 1, 1))
+curve(-0.07315*x^3, to = 10, xlim = c(-1, 11), ylim = c(-55, 55), add = TRUE, col = "green")
+curve(0.26519*x^4, to = 10, xlim = c(-1, 11), ylim = c(-55, 55), add = TRUE, col = 5)
+curve(-0.02839*x^5, to = 10, xlim = c(-1, 11), ylim = c(-55, 55), add = TRUE, col = 4)
+curve(0.03007*x^6, to = 10, xlim = c(-1, 11), ylim = c(-55, 55), add = TRUE, col = "purple")
+abline(h=0.67789,col= 1)
+legend("topright", c("Constant", "x", as.expression(bquote( ~ x^2 ~ "")), as.expression(bquote( ~ x^3 ~ "")), as.expression(bquote( ~ x^4 ~ "")), as.expression(bquote( ~ x^5 ~ "")), as.expression(bquote( ~ x^6 ~ ""))), col = c( 1, 2, "orange", "green", 5, 4, "purple"), lty = c(1, 1, 1, 1, 1))
 ```
 
 Many of these functions get very big, very quickly, when compared to the function that they add up to (which never exceeded y = 2) but when added together they make up a fair approximation of the length of `RcticG1ind1`.
@@ -430,9 +430,9 @@ According to this result, with a p-value of 0.5888 we have failed to reject the 
 Before we accept this result, let us plot these two samples together to see whether or not this is a reasonable outocome Figure 9.
 
 ```{r, fig.cap=fig$cap("Fluvial vs. Adfluial", "A comparison of male and female R-ctic Grayling lengths")}
-matplot(y = t(RcticG1), type = 'p', lty = 1, pch = 10, ylab = "Length (m)", xlab = "Age (weeks)", las = 1, col = 1, ylim = c(0, 0.9))
-matplot(y = t(RcticG2), type = 'p', lty = 1, pch = 1, las = 1, col = 2, add = TRUE)
-legend("bottomright",c("Fluvial", "Adfluvial"), col = c("black", "red"), pch = c(10, 1))
+matplot(y = t(RcticG1), type = 'p', lty = 1, pch = 19, ylab = "Length (m)", xlab = "Age (weeks)", las = 1, col = alpha(3, 0.5), ylim = c(0, 0.9))
+matplot(y = t(RcticG2), type = 'p', lty = 1, pch = 19, las = 1, col = alpha("black", 0.3), ylim = c(0, 0.9), add = TRUE)
+legend("bottomright",c("Fluvial", "Adfluvial"), col = c(3, "black"), pch = c(19, 19))
 ```
 
 There is a significant amount of overlap between these measurements of fluvial and adfluvial which supports our calculation that we cannot reject the null hypothesis.
