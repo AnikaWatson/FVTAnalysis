@@ -84,19 +84,19 @@ To explore what we mean by this, let us consider ambient light spectra. When bio
 par(mfrow=c(1, 3))
 
 #Let's plot the opsin spcrta as a combinations of Aband1 and Bband1
-curve(Aband1(x, lmax[1]), la, lb, 101, las=1, ylab="Normalized Absorbance", xlab="")
-abline(v=lmax[1], col = "darkgrey")
-abline(v=lmax[1], col = 3, lty = 2)
+curve(Aband1(x, 500), la, lb, 101, las=1, ylab="Normalized Absorbance", xlab="")
+abline(v=500, col = "darkgrey")
+abline(v=500, col = 3, lty = 2)
 legend("topleft", "A", bty = "n")
 
-curve(Aband1(x, lmax[2]) + Bband1(x, lmax[2]), la, lb, 101,  add = FALSE, las=1, ylab="", xlab="Wavelength (nm)")
-abline(v=565, col = "darkgrey")
-abline(v=lmax[2], col = 3, lty = 2)
+curve(Aband1(x, 500) + Bband1(x, 450), la, lb, 101,  add = FALSE, las=1, ylab="", xlab="Wavelength (nm)")
+abline(v=455, col = "darkgrey")
+abline(v=500, col = 3, lty = 2)
 legend("topleft", "B", bty = "n")
 
-curve(0.9*Aband1(x, 605) + Aband1(x, 450), la, lb, 101,  add = FALSE, las=1, ylab="", xlab="")
-abline(v=500, col = "darkgrey")
-abline(v=450, col = 3, lty = 2)
+curve(0.9*Aband1(x, 655) + Aband1(x, 500), la, lb, 101,  add = FALSE, las=1, ylab="", xlab="")
+abline(v=600, col = "darkgrey")
+abline(v=500, col = 3, lty = 2)
 legend("topleft", "C", bty = "n")
 ```
 
@@ -273,7 +273,7 @@ As a relatively new field, function-valued analysis does not yet have a universa
 Thus, it is important to plot the data (Figure 5).
 
 ```{r, eval=FALSE}
-#Start by plotting the data that the scientists cathered in the field.
+#Start by plotting the data that the scientists gathered in the field.
 plot.new(y = RcticG1ind1, x = xvalues, main = "Polynomial Regression", ylab = "Length (m)", xlab = "Age (weeks)", las = 1, pch = 19, col = 3)
 
 #Then add the function of the true length of RcticG1ind1 that was used to generate the data.
@@ -609,7 +609,7 @@ One major difference between sinusoidal functions and polynomials is that sinuso
 
 ##Going Further
 ###"Okay so What Now?"
-In this paper, we have focused on one type of function-valued analysis, a non-parametric approach (meaning we did not assume the underlying function dictating the data) of fitting a basis function to data. We chose this approach because Griswold et al. showed that even when the correct underlying function was known, a parametric analysis fitting the curve that was used to produce the data to the data did not always have better power than the non-parametric approach (Griswold et al., 2008). Other methods include a parametric approach, which involves assuming an underlying function and estimating the parameters of that function (Hernandez et al., 2015). For example, one might assume that data fits a Gaussian function and take the mean and standard deviation as parameters (here "standard deviation" refers to the width of the bell approximating the data, not the standard deviation of the data). These parameters can then be compared to each other as data, just as the coefficients of basis functions can be compared in non-parametric function-valued analysis. The curious reader is encouraged to consult the list of references to further explore function-valued traits. This field holds many new techniques to be developed, fine-tuned, and implemented so dive in and be part of this wave of innovation.
+In this paper, we have focused on one type of function-valued analysis, a non-parametric approach (meaning we did not assume the underlying function dictating the data) of fitting a basis function to data. We chose this approach because Griswold et al. showed that even when the correct underlying function was known, a parametric analysis fitting the curve that was used to produce the data to the data did not always have better power than the non-parametric approach (Griswold et al., 2008). Other methods include a parametric approach, which involves assuming an underlying function and estimating the parameters of that function (Hernandez et al., 2015). For example, one might assume that data fits a Gaussian function and take the mean and standard deviation as parameters (here "standard deviation" refers to the width of the bell approximating the data, not the standard deviation of the data). These parameters can then be compared to each other as data, just as the coefficients of basis functions can be compared in non-parametric function-valued analysis. While most function-valued analyses will inevitably take on one of these three forms, readers are encouraged to be creative in applying these methods. The curious reader is encouraged to consult the list of references to further explore function-valued traits. This field holds many new techniques to be developed, fine-tuned, and implemented so dive in and be part of this wave of innovation.
 
 ##Activities
 ###Exercises:
